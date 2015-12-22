@@ -19,7 +19,6 @@ if ($Img) {
         'SafeRename' => true,
         'NewName'    => 'sexyBuns',
         'Duplicates' => 'o',
-        'UploadTo'   => __DIR__.'/../../YoloAmazing/'
     ]);
 
     try {

@@ -24,16 +24,34 @@ class eImage
 {
     /** @var string */
     public $NewName;
+
     /** @var string */
     public $UploadTo;
+
     /** @var string */
     public $ReturnType = 'full_path';
+
     /** @var bool */
     public $SafeRename = true;
+
     /** @var string */
     public $Duplicates = 'o';
+
     /** @var string */
     public $Source;
+
+    /** @var array */
+    private $EnableMIMEs = [
+        '.jpe'  => 'image/jpeg',
+        '.jpg'  => 'image/jpg',
+        '.jpeg' => 'image/jpeg',
+        '.gif'  => 'image/gif',
+        '.png'  => 'image/png',
+        '.bmp'  => 'image/bmp',
+        '.ico'  => 'image/x-icon',
+    ];
+    /** @var array */
+    private $DisabledMIMEs = [];
 
     /**
      * eImage constructor.
@@ -121,18 +139,26 @@ class eImage
         }
 
         $ImageName     = $arUpload['name'];
+        $ImageType     = $arUpload['type'];
         $ImageTempName = $arUpload['tmp_name'];
         $ImageSize     = $arUpload['size'];
+        $Enabled       = false;
 
         $Ext = substr($ImageName, strrpos($ImageName, '.'));
 
+        if ($this->DisabledMIMEs && (!array_key_exists($Ext, $this->DisabledMIMEs) || !in_array($ImageType, $this->DisabledMIMEs))) {
+            $Enabled = true;
+        }
+
+        if ((!array_key_exists($Ext, $this->EnableMIMEs) || !in_array($ImageType, $this->EnableMIMEs)) && !$Enabled) {
+            throw new eImageException(eImageException::UPLOAD_EXT);
+        }
 
         if ($this->SafeRename) {
             $ImagePath = str_replace(basename($ImageName), '', $ImageName);
             $ImageName = $this->cleanUp(($this->NewName) ? $this->NewName : $ImageName);
             $ImageName = $ImagePath . $ImageName;
         }
-
 
         if ($newExt = strrchr($ImageName, '.')) {
             if ($newExt != $Ext) {
@@ -182,7 +208,6 @@ class eImage
         }
 
         if (move_uploaded_file($ImageTempName, $Target)) {
-
             /** @var string $Source easy access for resize and crop functions */
             $this->Source = $Target;
 
