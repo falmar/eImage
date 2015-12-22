@@ -1,2 +1,12 @@
+# IDE #
 .idea
-Test/
+
+# Images #
+*.jpg
+*.png
+*.gif
+*.bmp
+
+# Custom #
+eTest/
+notes
