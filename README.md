@@ -4,6 +4,7 @@ eImage it's a simple PHP Class to make Uploading and Editing Images even more ea
 
 ## Examples
 
+
 ### Upload Image
 
 ```php
@@ -48,7 +49,7 @@ try {
 > NOTE: If there is not an extension specified in 'NewName' parameter it will take the extension from the original image, you can also set the extension with 'NewExtension' parameter.
 
 
-## Crop Image
+### Crop Image
 
 ```php
 use eImage\eImage;
@@ -84,9 +85,10 @@ try {
 }
 
 ```
-> Note if you do not specify a NewName or Prefix parameter the original image will be override by the new crop image.
+> NOTE: if you do not specify a NewName or Prefix parameter the original image will be override by the new crop image.
 
-## Parameters and their default values
+
+### Parameters and their default values
 
 ```php
 /** @var string */
@@ -147,10 +149,11 @@ Specify the new name for your image.
 Specify where the new image is going to be uploaded to.
 
 #### ReturnType
-- 'array' from upload() function: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and additionally full_path.
-- 'array' from crop() function: Will return name, path, tmp_name, height, width, prefix and full_path.
 - 'full_path': string with the full path to the new image.
 - 'bool': true or false if the upload succeeded.
+- 'array':
+    - from upload() function: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and full_path.
+    - from crop() function: Will return name, path, tmp_name, height, width, prefix and full_path.
 
 #### SafeRename
 - true: will clean the image name and remove strange characters.
@@ -160,8 +163,8 @@ Specify where the new image is going to be uploaded to.
 If a there is an existing file:
 - 'o': Overwrite the file.
 - 'u': Create and unique file.
-- 'e': throw eImageException.
-- 'a': return false.
+- 'e': Throw eImageException.
+- 'a': Return false.
 
 #### EnabledMIMEs
 An array that contain the MIME Types the eImage Class will be allow to upload.
@@ -169,23 +172,23 @@ An array that contain the MIME Types the eImage Class will be allow to upload.
 ['.jpg' => 'image/jpg']
 ```
 #### DisabledMIMEs
-If this property is set it will forbid to upload the MIME Types or Extensions specified here
+If this property is set with values it will forbid to upload the MIME Types or Extensions specified.
 > NOTE: Any other MIME Type or Extension THAT IS NOT SET HERE will be allowed to upload.
 
 #### Source
 Full path to a file automatically set after image upload for easy access resize and crop functions.
 
 #### CreateDir
-If set to true create a directory if not exist (UploadTo | NewPath)
+If set to true create a directory if not exist (UploadTo | NewPath).
 
 #### ImageQuality
-Integer [1-100]%
+Integer [1-100]%.
 
 #### NewExtension
-Apply a new extension to the image (.jpg, .png, .gif)
+Apply a new extension to the image (.jpg, .png, .gif).
 
 #### Prefix
-Specify a new prefix for the image
+Specify a new prefix for the image.
 
 #### NewPath
-Specify a new path for the image, it apply only for crop and resize function 
+Specify path for the new image, it apply only for crop() and resize() functions. 
