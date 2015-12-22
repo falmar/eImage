@@ -92,6 +92,7 @@ private $EnableMIMEs = [
     '.bmp'  => 'image/bmp',
     '.ico'  => 'image/x-icon',
 ];
+
 /** @var array */
 private $DisabledMIMEs = [];
 ```
