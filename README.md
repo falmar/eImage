@@ -21,7 +21,7 @@ try {
   $Image->upload($File);
   
 } catch (eImageException $e){
-  /** do somethng **/
+  /** do something **/
 }
 
 ```
