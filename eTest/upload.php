@@ -17,9 +17,9 @@ if ($Img) {
     require_once('../autoload.php');
     $eImage = new eImage([
         'SafeRename' => true,
-        'NewName'    => 'sexyBuns.png',
+        'NewName'    => 'sexyBuns',
         'Duplicates' => 'o',
-        'UploadTo'   => '../yolo'
+        'UploadTo'   => __DIR__.'/../../YoloAmazing/'
     ]);
 
     try {

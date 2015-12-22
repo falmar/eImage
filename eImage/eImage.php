@@ -22,11 +22,17 @@ namespace eImage;
 
 class eImage
 {
+    /** @var string */
     public $NewName;
-    public $ReturnType = 'full_path';
-    public $SafeRename = true;
-    public $Duplicates = 'o';
+    /** @var string */
     public $UploadTo;
+    /** @var string */
+    public $ReturnType = 'full_path';
+    /** @var bool */
+    public $SafeRename = true;
+    /** @var string */
+    public $Duplicates = 'o';
+    /** @var string */
     public $Source;
 
     /**
@@ -35,6 +41,11 @@ class eImage
      * @param array $Options
      */
     public function __construct($Options = [])
+    {
+        $this->setProperties($Options);
+    }
+
+    public function setProperties($Options = [])
     {
         if (is_array($Options)) {
             foreach ($Options as $k => $v) {
@@ -182,7 +193,7 @@ class eImage
                         'path'      => $this->UploadTo,
                         'size'      => $ImageSize,
                         'tmp_name'  => $ImageTempName,
-                        'full_name' => $Target
+                        'full_path' => $Target
                     ];
                     break;
                 case 'full_path':
