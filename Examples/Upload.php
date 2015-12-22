@@ -20,7 +20,27 @@ require_once('../autoload.php');
 
 try {
 
+    /**
+     * Simple Upload
+     */
     $Image = new eImage();
+    $Image->upload($File);
+
+    /** -------------------------------------------------- */
+
+    /**
+     * the next code will do the following:
+     * Rename the image to my_new_image.
+     * Place the uploaded image into base_dir/Images/
+     * Create a new unique image if find an existing one.
+     * return an array with the new image properties.
+     */
+    $Image = new eImage([
+        'NewName'    => 'my_new_name',
+        'UploadTo'   => 'Images/',
+        'Duplicates' => 'u',
+        'ReturnType' => 'array'
+    ]);
     $Image->upload($File);
 
 } catch (eImageException $e) {

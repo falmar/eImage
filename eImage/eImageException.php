@@ -21,8 +21,10 @@ namespace eImage;
 class eImageException extends \Exception
 {
     const NO_IMAGE    = 'Please specify a source image';
-    const NO_WIDTH    = 'Please specify a width for the new image';
-    const NO_HEIGHT   = 'Please specify a height for the new image';
+    const NO_WIDTH    = 'Width specified for the new image is NaN';
+    const NO_HEIGHT   = 'Height specified for the new image is NaN';
+    const NO_X        = 'X Position specified for the new image is NaN';
+    const NO_Y        = 'Y Position specified for the new image is NaN';
     const IMAGE_EXIST = 'The image file you specified already exist';
 
     const UPLOAD_NO_ARRAY   = 'The uploaded file is not valid';
@@ -36,4 +38,6 @@ class eImageException extends \Exception
     const UPLOAD_EXT        = 'Invalid file extension';
     const UPLOAD_SIZE       = 'Uploaded File had a filesize of zero or was corrupt';
     const UPLOAD_FAILED     = 'Uploaded failed';
+
+    const CROP_EXT = 'Crop: Invalid file extension';
 }

@@ -4,7 +4,7 @@ eImage it's a simple PHP Class to make Uploading and Editing Images even more ea
 
 ## Examples
 
-### Simple Upload
+### Upload Image
 
 ```php
 use eImage\eImage;
@@ -17,8 +17,27 @@ require_once('eImage/autoload.php');
 
 try {
 
+  /**
+   * Simple Upload
+   */
   $Image = new eImage();
-  
+  $Image->upload($File);
+
+  /** -------------------------------------------------- */
+
+  /**
+   * the next code will do the following:
+   * Rename the image to my_new_image.
+   * Place the uploaded image into base_dir/Images/
+   * Create a new unique image if find an existing one.
+   * return an array with the new image properties.
+   */
+  $Image = new eImage([
+      'NewName'    => 'my_new_name',
+      'UploadTo'   => 'Images/',
+      'Duplicates' => 'u',
+      'ReturnType' => 'array'
+  ]);
   $Image->upload($File);
   
 } catch (eImageException $e){
@@ -26,13 +45,10 @@ try {
 }
 
 ```
+> NOTE: If there is not an extension specified in 'NewName' parameter it will take the extension from the original image, you can also set the extension with 'NewExtension' parameter.
 
-### Setting up some parameters to the upload
-This example will do the following:
-- Rename the image to my_new_image.
-- Place the uploaded image into base_dir/Images/
-- Create a new unique image if find an existing one.
-- return an array with the new image properties.
+
+## Crop Image
 
 ```php
 use eImage\eImage;
@@ -45,21 +61,30 @@ require_once('eImage/autoload.php');
 
 try {
 
-    $Image = new eImage([
-        'NewName' => 'my_new_name',
-        'UploadTo' => 'Images/',
-        'Duplicates' => 'u',
-        'ReturnType' => 'array'
-    ]);
+   /**
+    * Crop from upload
+    */
+   $Image = new eImage();
+   $Image->upload($File);
+   $Image->crop(250, 250, -50, -75);
 
-    $Image->upload($File);
+   /** -------------------------------------------------- */
 
-} catch (eImageException $e) {
-    /** do something **/
+   /**
+    * Crop from source file
+    */
+   $Image->setProperties([
+       'Source' => 'path_to_your_file.jpg',
+       'Prefix' => 'AfterCrop-'
+   ]);
+   $Image->crop(250, 250, -50, -75);
+  
+} catch (eImageException $e){
+  /** do something **/
 }
-```
-> NOTE: If there is not an extension specified in 'NewName' Parameter it will take the extension from the original image.
 
+```
+> Note if you do not specify a NewName or Prefix parameter the original image will be override by the new crop image.
 
 ## Parameters and their default values
 
@@ -95,6 +120,24 @@ private $EnableMIMEs = [
 
 /** @var array */
 private $DisabledMIMEs = [];
+
+/** @var bool */
+public $CreateDir = false;
+
+/** @var string */
+public $Source;
+
+/** @var int */
+public $ImageQuality = 90;
+
+/** @var string */
+public $NewExtension;
+
+/** @var string */
+public $Prefix;
+
+/** @var string */
+public $NewPath;
 ```
 
 #### NewName
@@ -104,7 +147,8 @@ Specify the new name for your image.
 Specify where the new image is going to be uploaded to.
 
 #### ReturnType
-- 'array': Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and additionally full_path.
+- 'array' from upload() function: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and additionally full_path.
+- 'array' from crop() function: Will return name, path, tmp_name, height, width, prefix and full_path.
 - 'full_path': string with the full path to the new image.
 - 'bool': true or false if the upload succeeded.
 
@@ -113,21 +157,35 @@ Specify where the new image is going to be uploaded to.
 - false: the new image will contain the same name as the uploaded image.
 
 #### Duplicates
-if a there is an existing file:
+If a there is an existing file:
 - 'o': Overwrite the file.
 - 'u': Create and unique file.
 - 'e': throw eImageException.
 - 'a': return false.
 
-#### Source
-full path to a file automatically set after image upload for easy access resize and crop functions.
-
 #### EnabledMIMEs
-array that contain the MIME Types the eImage Class will be allow to upload.
+An array that contain the MIME Types the eImage Class will be allow to upload.
 ```php
 ['.jpg' => 'image/jpg']
 ```
-
 #### DisabledMIMEs
 If this property is set it will forbid to upload the MIME Types or Extensions specified here
 > NOTE: Any other MIME Type or Extension THAT IS NOT SET HERE will be allowed to upload.
+
+#### Source
+Full path to a file automatically set after image upload for easy access resize and crop functions.
+
+#### CreateDir
+If set to true create a directory if not exist (UploadTo | NewPath)
+
+#### ImageQuality
+Integer [1-100]%
+
+#### NewExtension
+Apply a new extension to the image (.jpg, .png, .gif)
+
+#### Prefix
+Specify a new prefix for the image
+
+#### NewPath
+Specify a new path for the image, it apply only for crop and resize function 

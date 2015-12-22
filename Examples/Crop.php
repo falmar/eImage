@@ -2,7 +2,7 @@
 /**
  * Project: eImage
  * Date: 12/22/15
- * Time: 1:26 PM
+ * Time: 1:19 PM
  *
  * @link      https://github.com/falmar/eImage
  * @author    David Lavieri (falmar) <daviddlavier@gmail.com>
@@ -20,14 +20,23 @@ require_once('../autoload.php');
 
 try {
 
-    $Image = new eImage([
-        'NewName'    => 'my_new_name',
-        'UploadTo'   => 'Images/',
-        'Duplicates' => 'u',
-        'ReturnType' => 'array'
-    ]);
-
+    /**
+     * Crop from upload
+     */
+    $Image = new eImage();
     $Image->upload($File);
+    $Image->crop(250, 250, -50, -75);
+
+    /** -------------------------------------------------- */
+
+    /**
+     * Crop from source file
+     */
+    $Image->setProperties([
+        'Source' => 'path_to_your_file.jpg',
+        'Prefix' => 'AfterCrop-'
+    ]);
+    $Image->crop(250, 250, -50, -75);
 
 } catch (eImageException $e) {
     echo $e->getMessage();
