@@ -1,6 +1,6 @@
 # eImage
 
-eImage it's a simple PHP Class to make Uploading and Editing Images even more simple!
+eImage it's a simple PHP Class to make Uploading and Editing Images even more easy!
 
 ## Examples
 
