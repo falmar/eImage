@@ -12,3 +12,4 @@
 # Custom #
 eTest/
 notes
+.travis.yml
