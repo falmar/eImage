@@ -196,9 +196,9 @@ Specify where the new image is going to be uploaded to.
 - 'full_path': string with the full path to the new image.
 - 'bool': true or false if the upload succeeded.
 - 'array':
-    - from upload() function: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and full_path.
-    - from crop() function: Will return name, prefix, path, tmp_name, height, width and full_path.
-    - from resize() function: Will return name, prefix, path, tmp_name, height, width, pad_color and full_path.
+    - from upload() method: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and full_path.
+    - from crop() method: Will return name, prefix, path, tmp_name, height, width and full_path.
+    - from resize() method: Will return name, prefix, path, tmp_name, height, width, pad_color and full_path.
 
 #### SafeRename
 - true: will clean the image name and remove strange characters.
@@ -221,7 +221,7 @@ If this property is set with values it will forbid to upload the MIME Types or E
 > NOTE: Any other MIME Type or Extension THAT IS NOT SET HERE will be allowed to upload.
 
 #### Source
-Full path to a file automatically set after image upload for easy access resize and crop functions.
+Full path to a file automatically set after image upload for easy access resize and crop methods.
 
 #### CreateDir
 If set to true create a directory if not exist (UploadTo | NewPath).
@@ -236,7 +236,7 @@ Apply a new extension to the image (.jpg, .png, .gif).
 Specify a new prefix for the image.
 
 #### NewPath
-Specify path for the new image, it apply only for crop() and resize() functions.
+Specify path for the new image, it apply only for crop() and resize() methods.
 
 #### AspectRatio
 Set true or false if you want to maintain or not your image aspect ratio.
