@@ -1,8 +1,8 @@
 <?php
 /**
  * Project: eImage
- * Date: 12/22/15
- * Time: 1:19 PM
+ * Date: 12/23/15
+ * Time: 20:15 PM
  *
  * @link      https://github.com/falmar/eImage
  * @author    David Lavieri (falmar) <daviddlavier@gmail.com>
@@ -21,27 +21,25 @@ require_once('../autoload.php');
 try {
 
     /**
-     * Simple Upload
+     * Resize from upload
      */
     $Image = new eImage();
     $Image->upload($File);
+    $Image->resize(600, 450);
 
-    /** ---------- run one or another but not both --------- */
+    /** -------------------------------------------------- */
+
 
     /**
-     * the next code will do the following:
-     * Rename the image to my_new_image.
-     * Place the uploaded image into base_dir/Images/
-     * Create a new unique image if find an existing one.
-     * return an array with the new image properties.
+     * Resize from source file
      */
-    $Image = new eImage([
-        'NewName'    => 'my_new_name.bmp',
-        'UploadTo'   => 'Images/',
-        'Duplicates' => 'u',
-        'ReturnType' => 'array'
+    $Image->setProperties([
+        'Source' => 'my_source_image.jpg',
+        'Prefix' => 'AfterResize-',
+        'AspectRatio' => false,
+        'ScaleUp' => true
     ]);
-    $Image->upload($File);
+    $Image->resize(600, 205);
 
 } catch (eImageException $e) {
     echo $e->getMessage();

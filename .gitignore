@@ -3,9 +3,11 @@
 
 # Images #
 *.jpg
+*.jpeg
 *.png
 *.gif
 *.bmp
+*.wbmp;
 
 # Custom #
 eTest/
