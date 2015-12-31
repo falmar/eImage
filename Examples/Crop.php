@@ -32,7 +32,7 @@ try {
     /**
      * Crop from source file
      */
-    $Image->setProperties([
+    $Image->set([
         'Source' => 'path_to_your_file.jpg',
         'Prefix' => 'AfterCrop-'
     ]);

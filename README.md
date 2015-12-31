@@ -82,7 +82,7 @@ try {
    /**
     * Crop from source file
     */
-   $Image->setProperties([
+   $Image->set([
        'Source' => 'path_to_your_file.jpg',
        'Prefix' => 'AfterCrop-'
    ]);
@@ -121,7 +121,7 @@ try {
    /**
     * Resize from source file
     */
-   $Image->setProperties([
+   $Image->set([
        'Source' => 'my_source_image.jpg',
        'Prefix' => 'AfterResize-',
        'AspectRatio' => false,

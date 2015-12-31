@@ -33,7 +33,7 @@ try {
     /**
      * Resize from source file
      */
-    $Image->setProperties([
+    $Image->set([
         'Source' => 'my_source_image.jpg',
         'Prefix' => 'AfterResize-',
         'AspectRatio' => false,

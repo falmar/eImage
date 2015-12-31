@@ -94,10 +94,10 @@ class eImage
      */
     public function __construct($Options = [])
     {
-        $this->setProperties($Options);
+        $this->set($Options);
     }
 
-    public function setProperties($Options = [])
+    public function set($Options = [])
     {
         if (is_array($Options)) {
             foreach ($Options as $k => $v) {
@@ -323,7 +323,7 @@ class eImage
             }
         }
 
-        $toPos = [
+        $Position = [
             'dx' => 0,
             'dy' => 0,
             'sx' => 0,
@@ -395,12 +395,9 @@ class eImage
             imagefill($Canvas, 0, 0, imagecolorallocate($Canvas, $Color['r'], $Color['b'], $Color['g']));
         }
 
-        imagecopyresampled($Canvas, $File, $toPos['dx'], $toPos['dy'], $toPos['sx'], $toPos['sy'], $Width, $Height, $s_Width, $s_Height);
+        imagecopyresampled($Canvas, $File, $Position['dx'], $Position['dy'], $Position['sx'], $Position['sy'], $Width, $Height, $s_Width, $s_Height);
 
         $Quality = $this->ImageQuality;
-        if ($Ext == '.png') {
-            $Quality = ($Quality > 90) ? 9 : ((int)$Quality) / 10;
-        }
 
         if ($this->PadColor == 'transparent') {
             if ($Ext != '.gif') {
@@ -410,6 +407,10 @@ class eImage
             if ($Ext == '.gif') {
                 $Ext = '.jpg';
             }
+        }
+
+        if ($Ext == '.png') {
+            $Quality = ($Quality > 90) ? 9 : (int)(($Quality) / 10);
         }
 
         $this->imageCreate($Ext, $Canvas, $Source, $Quality);
@@ -493,19 +494,6 @@ class eImage
         $sWidth  = imagesx($File);
         $sHeight = imagesy($File);
         imagecopyresampled($Canvas, $File, $x, $y, 0, 0, $sWidth, $sHeight, $sWidth, $sHeight);
-
-        switch ($Ext) {
-            case '.png':
-                imagepng($Canvas, $Source, ($this->ImageQuality > 90) ? 9 : ((int)$this->ImageQuality) / 10);
-                break;
-            case '.wbmp':
-                imagewbmp($Canvas, $Source);
-                break;
-            default:
-
-                imagejpeg($Canvas, $Source, $this->ImageQuality);
-                break;
-        }
 
         $Quality = $this->ImageQuality;
 
@@ -630,8 +618,11 @@ class eImage
                 break;
             case 'image/png':
                 if (imagetypes() && IMG_PNG) {
-                    $File = imagecreatefrompng($Source);
-                    $Ext  = ($this->NewExtension) ? $this->NewExtension : '.png';
+                    $File  = imagecreatefrompng($Source);
+                    $Ext   = ($this->NewExtension) ? $this->NewExtension : '.png';
+                    $Alpha = imagecolorallocatealpha($File, 0, 0, 0, 127);
+                    imagecolortransparent($File, $Alpha);
+                    imagefill($File, 0, 0, $Alpha);
                     imagealphablending($File, true);
                     imagesavealpha($File, true);
                 } else {
