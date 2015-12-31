@@ -427,14 +427,14 @@ class eImage
                     'width'     => $Width,
                     'height'    => $Height,
                     'pad_color' => $this->PadColor,
-                    'full_path' => $Source . $Prefix . $Name
+                    'full_path' => $Source
                 ];
                 break;
             case 'full_path':
-                return (file_exists($Name)) ? $Name : false;
+                return (file_exists($Source)) ? $Source : false;
                 break;
             default:
-                return (file_exists($Name)) ? true : false;
+                return (file_exists($Source)) ? true : false;
                 break;
         }
     }
