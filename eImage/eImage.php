@@ -176,19 +176,16 @@ class eImage
             }
         }
 
-        $ImageName     = ($this->SafeRename) ? $this->cleanUp($arUpload['name']) : $arUpload['name'];
+        $ImageName     = ($this->NewName) ? $this->NewName : $arUpload['name'];
+        $ImageName     = ($this->SafeRename) ? $this->cleanUp($ImageName) : $ImageName;
         $ImageType     = $arUpload['type'];
         $ImageTempName = $arUpload['tmp_name'];
         $ImageSize     = $arUpload['size'];
-        $Ext           = substr($ImageName, strrpos($ImageName, '.'));
+        $Ext           = substr($arUpload['name'], strrpos($arUpload['name'], '.'));
         $Enabled       = false;
 
-        if ($this->DisabledMIMEs && (!array_key_exists($Ext, $this->DisabledMIMEs) || !in_array($ImageType, $this->DisabledMIMEs))) {
-            $Enabled = true;
-        }
-
-        if ((!array_key_exists($Ext, $this->EnableMIMEs) || !in_array($ImageType, $this->EnableMIMEs)) && !$Enabled) {
-            throw new eImageException(eImageException::UPLOAD_EXT);
+        if (is_integer(strpos($Ext, 'jpg'))) {
+            $Ext = '.jpeg';
         }
 
         if ($newExt = strrchr($ImageName, '.')) {
@@ -197,6 +194,14 @@ class eImage
             }
         } else {
             $ImageName = $ImageName . $Ext;
+        }
+
+        if ($this->DisabledMIMEs && (!array_key_exists($Ext, $this->DisabledMIMEs) || !in_array($ImageType, $this->DisabledMIMEs))) {
+            $Enabled = true;
+        }
+
+        if ((!array_key_exists($Ext, $this->EnableMIMEs) || !in_array($ImageType, $this->EnableMIMEs)) && !$Enabled) {
+            throw new eImageException(eImageException::UPLOAD_EXT);
         }
 
         $Prefix = $this->Prefix;
@@ -267,7 +272,7 @@ class eImage
             }
         }
 
-        $Name   = str_replace($Path, '', $Source);
+        $Name   = ($this->NewName) ? $this->NewName : str_replace($Path, '', $Source);
         $Name   = (strrpos($Name, $DS) !== strlen($Name)) ? $Name . $DS : $Name;
         $Name   = (strrpos($Name, '.')) ? substr($Name, 0, strrpos($Name, '.')) . $Ext : $Name . $Ext;
         $Name   = ($this->SafeRename) ? $this->cleanUp($Name) : $Name;
@@ -481,7 +486,7 @@ class eImage
             }
         }
 
-        $Name   = str_replace($Path, '', $Source);
+        $Name   = ($this->NewName) ? $this->NewName : str_replace($Path, '', $Source);
         $Name   = (strrpos($Name, $DS) !== strlen($Name)) ? $Name . $DS : $Name;
         $Name   = (strrpos($Name, '.')) ? substr($Name, 0, strrpos($Name, '.')) . $Ext : $Name . $Ext;
         $Name   = ($this->SafeRename) ? $this->cleanUp($Name) : $Name;
