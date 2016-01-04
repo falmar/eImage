@@ -18,10 +18,10 @@ class eImageTest extends PHPUnit_Framework_TestCase
     private function getSources()
     {
         return [
-            'assets/image.jpg'  => [600, 399],
-            'assets/image2.png' => [1024, 819],
-            'assets/image3.gif' => [500, 278],
-            'assets/image4.jpg' => [457, 640]
+            'tests/assets/image.jpg'  => [600, 399],
+            'tests/assets/image2.png' => [1024, 819],
+            'tests/assets/image3.gif' => [500, 278],
+            'tests/assets/image4.jpg' => [457, 640]
         ];
     }
 
@@ -70,7 +70,7 @@ class eImageTest extends PHPUnit_Framework_TestCase
     {
         foreach ($this->getSources() as $source => $sizes) {
             try {
-                $name   = substr($source, strpos($source, '/') + 1);
+                $name   = substr($source, strrpos($source, '/') + 1);
                 $width  = $sizes[0];
                 $height = $sizes[1];
 
@@ -95,12 +95,14 @@ class eImageTest extends PHPUnit_Framework_TestCase
                 $ex_rst = [
                     'name'      => $name,
                     'prefix'    => 'r_',
-                    'path'      => 'assets/',
+                    'path'      => 'tests/assets/',
                     'width'     => $n_width,
                     'height'    => $n_height,
                     'pad_color' => '#FFFFFF',
-                    'full_path' => 'assets/r_' . $name,
+                    'full_path' => 'tests/assets/r_' . $name,
                 ];
+
+                print_r($ex_rst);
 
                 $this->assertArraySubset($rst, $ex_rst);
 
@@ -153,7 +155,7 @@ class eImageTest extends PHPUnit_Framework_TestCase
     {
         try {
             $eImage = new eImage([
-                'Source'     => 'assets/r_image.jpeg',
+                'Source'     => 'tests/assets/r_image.jpeg',
                 'ReturnType' => 'bool',
                 'PadColor'   => '#FFFFFF'
             ]);
@@ -163,10 +165,10 @@ class eImageTest extends PHPUnit_Framework_TestCase
             $eImage->set(['Duplicates' => 'u']);
 
             $this->assertTrue($eImage->crop(100, 150, -50, 50));
-            $this->assertTrue(file_exists('assets/r_image_0.jpeg'));
+            $this->assertTrue(file_exists('tests/assets/r_image_0.jpeg'));
 
             $eImage->set([
-                'Source'     => 'assets/c_image.jpeg',
+                'Source'     => 'tests/assets/c_image.jpeg',
                 'Duplicates' => 'e',
                 'ScaleUp'    => true
             ]);
