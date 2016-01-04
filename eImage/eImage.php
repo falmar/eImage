@@ -291,25 +291,25 @@ class eImage
         if ($this->AspectRatio) {
             if ($s_Width > $s_Height) {
                 if ($this->Oversize) {
-                    $Width = round($s_Width * ($Height / $s_Height));
-                } else {
-                    $Percent = $Width / $s_Width;
-                    if (round($s_Height * $Percent) <= $Height) {
-                        $Height = round($s_Height * $Percent);
+                    $nHeight = round(($s_Height / $s_Width) * $Width);
+                    if ($nHeight < $Height) {
+                        $Width = round(($Height * $s_Width) / $s_Height);
                     } else {
-                        $Width = round($s_Width * $Percent);
+                        $Height = $nHeight;
                     }
+                } else {
+                    $Height = round(($s_Height / $s_Width) * $Width);
                 }
-            } else {
+            } elseif ($s_Height > $s_Width) {
                 if ($this->Oversize) {
-                    $Height = round($s_Height * ($Width / $s_Width));
-                } else {
-                    $Percent = $Height / $s_Height;
-                    if (round($s_Width * $Percent) <= $Width) {
-                        $Width = round($s_Width * $Percent);
+                    $nWidth = round(($Height * $s_Width) / $s_Height);
+                    if ($nWidth < $Width) {
+                        $Height = round(($s_Height / $s_Width) * $Width);
                     } else {
-                        $Height = round($s_Height * $Percent);
+                        $Width = $nWidth;
                     }
+                } else {
+                    $Width = round(($Height * $s_Width) / $s_Height);
                 }
             }
         }
