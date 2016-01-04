@@ -197,8 +197,8 @@ Specify where the new image is going to be uploaded to.
 - 'bool': true or false if the upload succeeded.
 - 'array':
     - from upload() method: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and full_path.
-    - from crop() method: Will return name, prefix, path, tmp_name, height, width and full_path.
-    - from resize() method: Will return name, prefix, path, tmp_name, height, width, pad_color and full_path.
+    - from crop() method: Will return name, prefix, path, height, width and full_path.
+    - from resize() method: Will return name, prefix, path, height, width, pad_color and full_path.
 
 #### SafeRename
 - true: will clean the image name and remove strange characters.
@@ -207,9 +207,8 @@ Specify where the new image is going to be uploaded to.
 #### Duplicates
 If a there is an existing file:
 - 'o': Overwrite the file.
-- 'u': Create and unique file.
+- 'u': Create an unique file.
 - 'e': Throw eImageException.
-- 'a': Return false.
 
 #### EnabledMIMEs
 An array that contain the MIME Types the eImage Class will be allow to upload.

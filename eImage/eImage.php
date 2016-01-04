@@ -483,11 +483,10 @@ class eImage
             $Quality = ($Quality > 90) ? 9 : ((int)$Quality) / 10;
         }
 
-        $this->imageCreate($Ext, $Canvas, $Name, $Quality);
+        $this->imageCreate($Ext, $Canvas, $Source, $Quality);
 
         imagedestroy($File);
         imagedestroy($Canvas);
-
 
         $ReturnType = strtolower($this->ReturnType);
         if ($ReturnType === 'array') {
@@ -495,7 +494,6 @@ class eImage
                 'name'      => $Name,
                 'prefix'    => $Prefix,
                 'path'      => $Path,
-                'tmp_name'  => $Prefix . $Name,
                 'full_path' => $Source,
                 'width'     => $Width,
                 'height'    => $Height
@@ -522,8 +520,6 @@ class eImage
             if ($this->Duplicates === 'o') {
             } elseif ($this->Duplicates === 'e') {
                 throw new eImageException(eImageException::IMAGE_EXIST);
-            } elseif ($this->Duplicates === 'a') {
-                return false;
             } else {
                 if (strrpos(($Name), '.')) {
                     $im = substr(($Name), 0, strrpos(($Name), '.'));
