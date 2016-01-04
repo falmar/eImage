@@ -371,9 +371,10 @@ class eImage
 
         $Canvas = imagecreatetruecolor($c_Width, $c_Height);
 
-        if (!$this->PadColor == 'transparent') {
-            imagefill($Canvas, 0, 0, imagecolorallocatealpha($Canvas, 0, 0, 0, 127));
-            imagealphablending($Canvas, true);
+        if ($this->PadColor == 'transparent') {
+            imagealphablending($Canvas, false);
+            $color = imagecolorallocatealpha($Canvas, 0, 0, 0, 127);
+            imagefill($Canvas, 0, 0, $color);
             imagesavealpha($Canvas, true);
         } else {
             $Color = $this->hex2rbg($this->PadColor);
@@ -584,13 +585,8 @@ class eImage
             }
         } elseif ($Mime === 'image/png') {
             if (imagetypes() && IMG_PNG) {
-                $File  = imagecreatefrompng($Source);
-                $Ext   = ($this->NewExtension) ? $this->NewExtension : '.png';
-                $Alpha = imagecolorallocatealpha($File, 0, 0, 0, 127);
-                imagecolortransparent($File, $Alpha);
-                imagefill($File, 0, 0, $Alpha);
-                imagealphablending($File, true);
-                imagesavealpha($File, true);
+                $File = imagecreatefrompng($Source);
+                $Ext  = ($this->NewExtension) ? $this->NewExtension : '.png';
             } else {
                 throw new eImageException(eImageException::BAD_EXT . ' - PNG not supported PHP');
             }

@@ -1,4 +1,6 @@
-# eImage
+# eImage - Image upload, resize and crop!
+
+[![Build Status](https://travis-ci.org/falmar/eImage.svg?branch=master)](https://travis-ci.org/falmar/eImage)
 
 eImage it's a simple PHP Class to make Uploading and Editing Images even more easy!
 
@@ -6,9 +8,13 @@ A rewrite of a old Class (_image) originally written by Mark Jackson (mjdigital)
 
 Major changes from the original class:
 - Used all available PSR (Autoload, CodeStyle, etc...)
-- Added Exception to handle errors
+- Added Exception to handle errors  
 - Reduced portions of code by putting them into general class methods
 - Removed obsolete|unused methods|conditions|variables
+
+## Requirements
+
+- PHP >= 5.4
 
 ## Examples
 
@@ -35,7 +41,7 @@ try {
   /** -------------------------------------------------- */
 
   /**
-   * the next code will do the following:
+   * The next code will do the following:
    * Rename the image to my_new_image.
    * Place the uploaded image into base_dir/Images/
    * Create a new unique image if find an existing one.
@@ -55,7 +61,7 @@ try {
 
 ```
 > NOTE: If there is not an extension specified in 'NewName' parameter it will take the extension from the original image.
-> NOTE2: You can specify a new extension with NewExtension parameter
+> NOTE2: You can specify a new extension with NewExtension property
 
 ### Crop Image
 
@@ -93,7 +99,7 @@ try {
 }
 
 ```
-> NOTE: if you do not specify a NewName or Prefix parameter the original image will be override by the new crop image.
+> NOTE: if you do not specify a NewName or Prefix parameter the original image will be override by the new crop method. You can also set the Duplicates to 'u' unique to create a new image instead of override
 
 ### Resize Image
 
