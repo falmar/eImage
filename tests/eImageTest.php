@@ -102,8 +102,6 @@ class eImageTest extends PHPUnit_Framework_TestCase
                     'full_path' => 'tests/assets/r_' . $name,
                 ];
 
-                print_r($ex_rst);
-
                 $this->assertArraySubset($rst, $ex_rst);
 
                 $width  = $sizes[0];
