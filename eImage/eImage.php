@@ -133,29 +133,21 @@ class eImage
             throw new eImageException(eImageException::UPLOAD_NO_ARRAY);
         }
 
-        if (!$arUpload['error']) {
-            switch ($arUpload['error']) {
-                case 1:
-                    throw new eImageException(eImageException::UPLOAD_INI_MAX);
-                    break;
-                case 2:
-                    throw new eImageException(eImageException::UPLOAD_FORM_MAX);
-                    break;
-                case 3:
-                    throw new eImageException(eImageException::UPLOAD_PARTIAL);
-                    break;
-                case 4:
-                    throw new eImageException(eImageException::UPLOAD_NO_FILE);
-                    break;
-                case 6:
-                    throw new eImageException(eImageException::UPLOAD_NO_TMP_DIR);
-                    break;
-                case 7:
-                    throw new eImageException(eImageException::UPLOAD_WRITE_AC);
-                    break;
-                case 8:
-                    throw new eImageException(eImageException::UPLOAD_EXT);
-                    break;
+        if (isset($arUpload['error'])) {
+            if ($arUpload['error'] === 1) {
+                throw new eImageException(eImageException::UPLOAD_INI_MAX);
+            } elseif ($arUpload['error'] === 2) {
+                throw new eImageException(eImageException::UPLOAD_FORM_MAX);
+            } elseif ($arUpload['error'] === 3) {
+                throw new eImageException(eImageException::UPLOAD_PARTIAL);
+            } elseif ($arUpload['error'] === 4) {
+                throw new eImageException(eImageException::UPLOAD_NO_FILE);
+            } elseif ($arUpload['error'] === 6) {
+                throw new eImageException(eImageException::UPLOAD_NO_TMP_DIR);
+            } elseif ($arUpload['error'] === 7) {
+                throw new eImageException(eImageException::UPLOAD_WRITE_AC);
+            } elseif ($arUpload['error'] === 8) {
+                throw new eImageException(eImageException::UPLOAD_EXT);
             }
         }
 
@@ -216,21 +208,19 @@ class eImage
             /** @var string $Source easy access for resize and crop functions */
             $this->Source = $Target;
 
-            switch (strtolower($this->ReturnType)) {
-                case 'array':
-                    return [
-                        'name'      => basename($ImageName),
-                        'path'      => $this->UploadTo,
-                        'size'      => $ImageSize,
-                        'tmp_name'  => $ImageTempName,
-                        'full_path' => $Target
-                    ];
-                    break;
-                case 'full_path':
-                    return (file_exists($Target)) ? $Target : false;
-                default:
-                    return (file_exists($Target)) ? true : false;
-                    break;
+            $ReturnType = strtolower($this->ReturnType);
+            if ($ReturnType === 'array') {
+                return [
+                    'name'      => basename($ImageName),
+                    'path'      => $this->UploadTo,
+                    'size'      => $ImageSize,
+                    'tmp_name'  => $ImageTempName,
+                    'full_path' => $Target
+                ];
+            } elseif ($ReturnType === 'full_path') {
+                return (file_exists($Source)) ? $Source : false;
+            } else {
+                return (file_exists($Source)) ? true : false;
             }
 
         } else {
@@ -342,50 +332,40 @@ class eImage
             $bottom = $c_Height - $Height;
             $x      = ($c_Width - $Width) / 2;
             $y      = ($c_Height - $Height) / 2;
-            switch (true) {
-                case (strpos($this->Position, ',')):
-                    $Dimensions     = explode($this->Position, ',');
-                    $x              = (int)@$Dimensions[0];
-                    $y              = (int)@$Dimensions[1];
-                    $Position['dx'] = $x;
-                    $Position['dy'] = $y;
-                    break;
-                case ($this->Position == 'tl'):
-                    $Position['dx'] = $left;
-                    $Position['dy'] = $top;
-                    break;
-                case ($this->Position == 'tr'):
-                    $Position['dx'] = $right;
-                    $Position['dy'] = $top;
-                    break;
-                case ($this->Position == 'tc'):
-                    $Position['dx'] = $x;
-                    $Position['dy'] = $top;
-                    break;
-                case ($this->Position == 'bl'):
-                    $Position['dx'] = $left;
-                    $Position['dy'] = $bottom;
-                    break;
-                case ($this->Position == 'br'):
-                    $Position['dx'] = $right;
-                    $Position['dy'] = $bottom;
-                    break;
-                case ($this->Position == 'bc'):
-                    $Position['dx'] = $x;
-                    $Position['dy'] = $bottom;
-                    break;
-                case ($this->Position == 'cl'):
-                    $Position['dx'] = $left;
-                    $Position['dy'] = $y;
-                    break;
-                case ($this->Position == 'cr'):
-                    $Position['dx'] = $right;
-                    $Position['dy'] = $y;
-                    break;
-                default:
-                    $Position['dx'] = $x;
-                    $Position['dy'] = $y;
-                    break;
+
+            if (strpos($this->Position, ',')) {
+                $Dimensions     = explode($this->Position, ',');
+                $x              = (int)@$Dimensions[0];
+                $y              = (int)@$Dimensions[1];
+                $Position['dx'] = $x;
+                $Position['dy'] = $y;
+            } elseif ($this->Position === 'tl') {
+                $Position['dx'] = $left;
+                $Position['dy'] = $top;
+            } elseif ($this->Position === 'tr') {
+                $Position['dx'] = $right;
+                $Position['dy'] = $top;
+            } elseif ($this->Position === 'tc') {
+                $Position['dx'] = $x;
+                $Position['dy'] = $top;
+            } elseif ($this->Position === 'bl') {
+                $Position['dx'] = $left;
+                $Position['dy'] = $bottom;
+            } elseif ($this->Position === 'br') {
+                $Position['dx'] = $right;
+                $Position['dy'] = $bottom;
+            } elseif ($this->Position === 'bc') {
+                $Position['dx'] = $x;
+                $Position['dy'] = $bottom;
+            } elseif ($this->Position === 'cl') {
+                $Position['dx'] = $left;
+                $Position['dy'] = $y;
+            } elseif ($this->Position === 'cr') {
+                $Position['dx'] = $right;
+                $Position['dy'] = $y;
+            } else {
+                $Position['dx'] = $x;
+                $Position['dy'] = $y;
             }
         }
 
@@ -423,24 +403,21 @@ class eImage
         imagedestroy($File);
         imagedestroy($Canvas);
 
-        switch (strtolower($this->ReturnType)) {
-            case 'array':
-                return [
-                    'name'      => $Name,
-                    'prefix'    => $Prefix,
-                    'path'      => $Path,
-                    'width'     => $Width,
-                    'height'    => $Height,
-                    'pad_color' => $this->PadColor,
-                    'full_path' => $Source
-                ];
-                break;
-            case 'full_path':
-                return (file_exists($Source)) ? $Source : false;
-                break;
-            default:
-                return (file_exists($Source)) ? true : false;
-                break;
+        $ReturnType = strtolower($this->ReturnType);
+        if ($ReturnType === 'array') {
+            return [
+                'name'      => $Name,
+                'prefix'    => $Prefix,
+                'path'      => $Path,
+                'width'     => $Width,
+                'height'    => $Height,
+                'pad_color' => $this->PadColor,
+                'full_path' => $Source
+            ];
+        } elseif ($ReturnType === 'full_path') {
+            return (file_exists($Source)) ? $Source : false;
+        } else {
+            return (file_exists($Source)) ? true : false;
         }
     }
 
@@ -511,23 +488,22 @@ class eImage
         imagedestroy($File);
         imagedestroy($Canvas);
 
-        switch (strtolower($this->ReturnType)) {
-            case 'array':
-                return [
-                    'name'      => $Name,
-                    'prefix'    => $Prefix,
-                    'path'      => $Path,
-                    'tmp_name'  => $Prefix . $Name,
-                    'full_path' => $Source,
-                    'width'     => $Width,
-                    'height'    => $Height
-                ];
-                break;
-            case 'full_path':
-                return (file_exists($Source)) ? $Source : false;
-            default:
-                return (file_exists($Source)) ? true : false;
-                break;
+
+        $ReturnType = strtolower($this->ReturnType);
+        if ($ReturnType === 'array') {
+            return [
+                'name'      => $Name,
+                'prefix'    => $Prefix,
+                'path'      => $Path,
+                'tmp_name'  => $Prefix . $Name,
+                'full_path' => $Source,
+                'width'     => $Width,
+                'height'    => $Height
+            ];
+        } elseif ($ReturnType === 'full_path') {
+            return (file_exists($Source)) ? $Source : false;
+        } else {
+            return (file_exists($Source)) ? true : false;
         }
     }
 
@@ -542,28 +518,24 @@ class eImage
     private function handleDuplicates($Path, $Prefix, &$Name, &$Ext)
     {
         if (file_exists($Path . $Prefix . $Name)) {
-            switch ($this->Duplicates) {
-                case 'o':
-                    break;
-                case 'e':
-                    throw new eImageException(eImageException::IMAGE_EXIST);
-                    break;
-                case 'a':
-                    return false;
-                    break;
-                default:
-                    if (strrpos(($Name), '.')) {
-                        $im = substr(($Name), 0, strrpos(($Name), '.'));
-                    } else {
-                        $im = ($Name);
-                    }
 
-                    $i = 0;
-                    while (file_exists($Path . $Prefix . $im . '_' . $i . $Ext)) {
-                        $i++;
-                    }
-                    $Name = $Prefix . $im . '_' . $i . $Ext;
-                    break;
+            if ($this->Duplicates === 'o') {
+            } elseif ($this->Duplicates === 'e') {
+                throw new eImageException(eImageException::IMAGE_EXIST);
+            } elseif ($this->Duplicates === 'a') {
+                return false;
+            } else {
+                if (strrpos(($Name), '.')) {
+                    $im = substr(($Name), 0, strrpos(($Name), '.'));
+                } else {
+                    $im = ($Name);
+                }
+
+                $i = 0;
+                while (file_exists($Path . $Prefix . $im . '_' . $i . $Ext)) {
+                    $i++;
+                }
+                $Name = $Prefix . $im . '_' . $i . $Ext;
             }
         }
 
@@ -580,19 +552,14 @@ class eImage
     {
         $Quality = (!is_null($Quality)) ? $Quality : $this->ImageQuality;
 
-        switch ($Ext) {
-            case '.gif':
-                imagegif($Canvas, $Name);
-                break;
-            case '.png':
-                imagepng($Canvas, $Name, $Quality);
-                break;
-            case '.wbmp':
-                imagewbmp($Canvas, $Name);
-                break;
-            default:
-                imagejpeg($Canvas, $Name, $Quality);
-                break;
+        if ($Ext === '.gif') {
+            imagegif($Canvas, $Name);
+        } elseif ($Ext === '.png') {
+            imagepng($Canvas, $Name, $Quality);
+        } elseif ($Ext === '.wbmp') {
+            imagewbmp($Canvas, $Name);
+        } else {
+            imagejpeg($Canvas, $Name, $Quality);
         }
     }
 
@@ -604,47 +571,42 @@ class eImage
      */
     private function imageCreateSource($Source, &$File, &$Ext)
     {
-        switch (getimagesize($Source)['mime']) {
-            case 'image/gif':
-                if (imagetypes() && IMG_GIF) {
-                    $File = imagecreatefromgif($Source);
-                    $Ext  = ($this->NewExtension) ? $this->NewExtension : '.gif';
-                } else {
-                    throw new eImageException(eImageException::CROP_EXT . ' - GIF not supported PHP');
-                }
-                break;
-            case 'image/jpeg':
-                if (imagetypes() && IMG_JPEG) {
-                    $File = imagecreatefromjpeg($Source);
-                    $Ext  = ($this->NewExtension) ? $this->NewExtension : '.jpeg';
-                } else {
-                    throw new eImageException(eImageException::CROP_EXT . ' - JPEG not supported PHP');
-                }
-                break;
-            case 'image/png':
-                if (imagetypes() && IMG_PNG) {
-                    $File  = imagecreatefrompng($Source);
-                    $Ext   = ($this->NewExtension) ? $this->NewExtension : '.png';
-                    $Alpha = imagecolorallocatealpha($File, 0, 0, 0, 127);
-                    imagecolortransparent($File, $Alpha);
-                    imagefill($File, 0, 0, $Alpha);
-                    imagealphablending($File, true);
-                    imagesavealpha($File, true);
-                } else {
-                    throw new eImageException(eImageException::CROP_EXT . ' - PNG not supported PHP');
-                }
-                break;
-            case 'image/wbmp':
-                if (imagetypes() && IMG_WBMP) {
-                    $File = imagecreatefromwbmp($Source);
-                    $Ext  = ($this->NewExtension) ? $this->NewExtension : '.wbmp';
-                } else {
-                    throw new eImageException(eImageException::CROP_EXT . ' - WBMP not supported PHP');
-                }
-                break;
-            default:
-                throw new eImageException(eImageException::CROP_EXT);
-                break;
+        $Mime = getimagesize($Source)['mime'];
+        if ($Mime === 'image/gif') {
+            if (imagetypes() && IMG_GIF) {
+                $File = imagecreatefromgif($Source);
+                $Ext  = ($this->NewExtension) ? $this->NewExtension : '.gif';
+            } else {
+                throw new eImageException(eImageException::BAD_EXT . ' - GIF not supported PHP');
+            }
+        } elseif ($Mime === 'image/jpeg') {
+            if (imagetypes() && IMG_JPEG) {
+                $File = imagecreatefromjpeg($Source);
+                $Ext  = ($this->NewExtension) ? $this->NewExtension : '.jpeg';
+            } else {
+                throw new eImageException(eImageException::BAD_EXT . ' - JPEG not supported PHP');
+            }
+        } elseif ($Mime === 'image/png') {
+            if (imagetypes() && IMG_PNG) {
+                $File  = imagecreatefrompng($Source);
+                $Ext   = ($this->NewExtension) ? $this->NewExtension : '.png';
+                $Alpha = imagecolorallocatealpha($File, 0, 0, 0, 127);
+                imagecolortransparent($File, $Alpha);
+                imagefill($File, 0, 0, $Alpha);
+                imagealphablending($File, true);
+                imagesavealpha($File, true);
+            } else {
+                throw new eImageException(eImageException::BAD_EXT . ' - PNG not supported PHP');
+            }
+        } elseif ($Mime === 'image/wbmp') {
+            if (imagetypes() && IMG_WBMP) {
+                $File = imagecreatefromwbmp($Source);
+                $Ext  = ($this->NewExtension) ? $this->NewExtension : '.wbmp';
+            } else {
+                throw new eImageException(eImageException::BAD_EXT . ' - WBMP not supported PHP');
+            }
+        } else {
+            throw new eImageException(eImageException::BAD_EXT);
         }
     }
 

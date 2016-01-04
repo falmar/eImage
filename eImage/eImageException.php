@@ -39,5 +39,5 @@ class eImageException extends \Exception
     const UPLOAD_SIZE       = 'Uploaded File had a filesize of zero or was corrupt';
     const UPLOAD_FAILED     = 'Uploaded failed';
 
-    const CROP_EXT = 'Crop: Invalid file extension';
+    const BAD_EXT = 'Invalid file extension';
 }
