@@ -215,12 +215,12 @@ class eImage
                     'path'      => $this->UploadTo,
                     'size'      => $ImageSize,
                     'tmp_name'  => $ImageTempName,
-                    'full_path' => $Target
+                    'full_path' => $this->Source
                 ];
             } elseif ($ReturnType === 'full_path') {
-                return (file_exists($Source)) ? $Source : false;
+                return (file_exists($this->Source)) ? $this->Source : false;
             } else {
-                return (file_exists($Source)) ? true : false;
+                return (file_exists($this->Source)) ? true : false;
             }
 
         } else {
