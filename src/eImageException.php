@@ -10,7 +10,7 @@
  * @license   http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
-namespace eImage;
+namespace Falmar\eImage;
 
 /**
  * Class eImageException

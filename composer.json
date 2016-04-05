@@ -1,0 +1,14 @@
+{
+  "name": "falmar/eimage",
+  "description": "Image upload, resize and crop PHP Class",
+  "type": "project",
+  "license": "MIT",
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Falmar\\eImage\\": "src"
+    }
+  }
+}

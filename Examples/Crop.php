@@ -10,13 +10,13 @@
  * @license   http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
-use eImage\eImage;
-use eImage\eImageException;
+use Falmar\eImage\eImage;
+use Falmar\eImage\eImageException;
 
 /** Upload your image **/
 $File = (isset($_FILES['img'])) ? $_FILES['img'] : null;
 
-require_once('../autoload.php');
+require_once('../vendor/autoload.php');
 
 try {
 

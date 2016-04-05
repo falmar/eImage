@@ -10,8 +10,8 @@
  * @license   http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 
-use eImage\eImage;
-use eImage\eImageException;
+use Falmar\eImage\eImage;
+use Falmar\eImage\eImageException;
 
 class eImageTest extends PHPUnit_Framework_TestCase
 {

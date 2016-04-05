@@ -7,4 +7,5 @@ php:
   - 7.0
 
 script:
+    - composer update
     - phpunit
