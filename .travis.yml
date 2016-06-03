@@ -6,6 +6,9 @@ php:
   - 5.6
   - 7.0
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 script:
     - composer update
     - phpunit
