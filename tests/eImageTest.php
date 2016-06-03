@@ -3,7 +3,6 @@
  * Project: eImage
  * Date: 1/4/16
  * Time: 2:03 PM
- *
  * @link      https://github.com/falmar/eImage
  * @author    David Lavieri (falmar) <daviddlavier@gmail.com>
  * @copyright 2016 David Lavieri
@@ -53,7 +52,7 @@ class eImageTest extends PHPUnit_Framework_TestCase
     }
 
 
-    public function testgetImageSize()
+    public function testGetImageSize()
     {
         foreach ($this->getSources() as $source => $size) {
             $this->assertArraySubset((new eImage())->getImageSize($source), [
@@ -66,6 +65,9 @@ class eImageTest extends PHPUnit_Framework_TestCase
 
     }
 
+    /**
+     * @covers eImage::resize
+     */
     public function testResize()
     {
         foreach ($this->getSources() as $source => $sizes) {
@@ -129,6 +131,10 @@ class eImageTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @covers eImage::crop
+     */
+
     public function testCrop()
     {
         foreach ($this->getSources() as $source => $sizes) {
@@ -149,7 +155,7 @@ class eImageTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testhandleDuplicates()
+    public function testHandleDuplicates()
     {
         try {
             $eImage = new eImage([
