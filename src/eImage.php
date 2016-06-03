@@ -3,7 +3,6 @@
  * Project: eImage
  * Date: 12/21/15
  * Time: 8:21 PM
- *
  * @link      https://github.com/falmar/eImage
  * @author    David Lavieri (falmar) <daviddlavier@gmail.com>
  * @copyright 2015 David Lavieri
@@ -15,7 +14,6 @@ namespace Falmar\eImage;
 /**
  * Class eImage
  * Image Upload and Edition
- *
  * @package eImage
  * @author  David Lavieri (falmar) <daviddlavier@gmail.com>
  */
@@ -110,7 +108,8 @@ class eImage
 
     /**
      * @param $String
-     * @return mixed
+     * 
+*@return mixed
      */
     public function cleanUp($String)
     {
@@ -124,6 +123,7 @@ class eImage
 
     /**
      * @param array $arUpload
+     *
      * @return array|bool|string
      * @throws eImageException
      */
@@ -188,7 +188,9 @@ class eImage
             $ImageName = $ImageName . $Ext;
         }
 
-        if ($this->DisabledMIMEs && (!array_key_exists($Ext, $this->DisabledMIMEs) || !in_array($ImageType, $this->DisabledMIMEs))) {
+        if ($this->DisabledMIMEs && (!array_key_exists($Ext, $this->DisabledMIMEs) || !in_array($ImageType,
+                    $this->DisabledMIMEs))
+        ) {
             $Enabled = true;
         }
 
@@ -233,6 +235,7 @@ class eImage
      *
      * @param $Width
      * @param $Height
+     *
      * @return array|bool|string
      * @throws eImageException
      */
@@ -381,7 +384,8 @@ class eImage
             imagefill($Canvas, 0, 0, imagecolorallocate($Canvas, $Color['r'], $Color['b'], $Color['g']));
         }
 
-        imagecopyresampled($Canvas, $File, $Position['dx'], $Position['dy'], $Position['sx'], $Position['sy'], $Width, $Height, $s_Width, $s_Height);
+        imagecopyresampled($Canvas, $File, $Position['dx'], $Position['dy'], $Position['sx'], $Position['sy'], $Width,
+            $Height, $s_Width, $s_Height);
 
         $Quality = $this->ImageQuality;
 
@@ -429,6 +433,7 @@ class eImage
      * @param $Height
      * @param $x
      * @param $y
+     *
      * @return array|bool|string
      * @throws eImageException
      */
@@ -511,6 +516,7 @@ class eImage
      * @param string $Prefix
      * @param string $Name
      * @param string $Ext
+     *
      * @return bool
      * @throws eImageException
      */
@@ -564,6 +570,7 @@ class eImage
      * @param string   $Source
      * @param resource $File
      * @param string   $Ext
+     *
      * @throws eImageException
      */
     private function imageCreateSource($Source, &$File, &$Ext)
@@ -604,6 +611,7 @@ class eImage
 
     /**
      * @param string $Hex
+     *
      * @return array
      */
     private function hex2rbg($Hex)
@@ -621,6 +629,7 @@ class eImage
 
     /**
      * @param string $Img
+     *
      * @return array
      */
     public function getImageSize($Img)
