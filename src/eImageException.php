@@ -12,6 +12,7 @@
 namespace Falmar\eImage;
 
 /**
+ * @codeCoverageIgnore
  * Class eImageException
  * @package eImage
  * @author  David Lavieri (falmar) <daviddlavier@gmail.com>

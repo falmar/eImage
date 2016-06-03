@@ -52,6 +52,9 @@ class eImageTest extends PHPUnit_Framework_TestCase
     }
 
 
+    /**
+     * @covers Falmar\eImage\eImage::getImageSize
+     */
     public function testGetImageSize()
     {
         foreach ($this->getSources() as $source => $size) {
@@ -134,7 +137,6 @@ class eImageTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Falmar\eImage\eImage::crop
      */
-
     public function testCrop()
     {
         foreach ($this->getSources() as $source => $sizes) {
@@ -155,6 +157,10 @@ class eImageTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @covers Falmar\eImage\eImage::crop
+     * @covers Falmar\eImage\eImage::resize
+     */
     public function testHandleDuplicates()
     {
         try {

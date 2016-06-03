@@ -107,9 +107,11 @@ class eImage
     }
 
     /**
-     * @param $String
-     * 
-*@return mixed
+     * @codeCoverageIgnore
+     *
+*@param $String
+     *
+     * @return mixed
      */
     public function cleanUp($String)
     {
@@ -512,12 +514,15 @@ class eImage
     }
 
     /**
-     * @param string $Path
+     * @codeCoverageIgnore
+     * 
+*@param string $Path
      * @param string $Prefix
      * @param string $Name
      * @param string $Ext
-     *
-     * @return bool
+     
+     * 
+*@return bool
      * @throws eImageException
      */
     private function handleDuplicates($Path, $Prefix, &$Name, &$Ext)
@@ -546,6 +551,8 @@ class eImage
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @param string   $Ext
      * @param resource $Canvas
      * @param string   $Name
@@ -567,6 +574,8 @@ class eImage
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @param string   $Source
      * @param resource $File
      * @param string   $Ext
@@ -610,6 +619,8 @@ class eImage
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @param string $Hex
      *
      * @return array
