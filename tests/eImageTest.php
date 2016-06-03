@@ -66,7 +66,7 @@ class eImageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers eImage::resize
+     * @covers Falmar\eImage\eImage::resize
      */
     public function testResize()
     {
@@ -132,7 +132,7 @@ class eImageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers eImage::crop
+     * @covers Falmar\eImage\eImage::crop
      */
 
     public function testCrop()
