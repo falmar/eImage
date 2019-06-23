@@ -11,13 +11,14 @@
 
 use Falmar\eImage\eImage;
 use Falmar\eImage\eImageException;
+use PHPUnit\Framework\TestCase;
 
-class eImageTest extends PHPUnit_Framework_TestCase
+class eImageTest extends TestCase
 {
     private function getSources()
     {
         return [
-            'tests/assets/image.jpg'  => [600, 399],
+            'tests/assets/image.jpg' => [600, 399],
             'tests/assets/image2.png' => [1024, 819],
             'tests/assets/image3.gif' => [500, 278],
             'tests/assets/image4.jpg' => [457, 640]
@@ -59,13 +60,12 @@ class eImageTest extends PHPUnit_Framework_TestCase
     {
         foreach ($this->getSources() as $source => $size) {
             $this->assertArraySubset((new eImage())->getImageSize($source), [
-                'width'  => $size[0],
+                'width' => $size[0],
                 'height' => $size[1]
             ]);
         }
 
         $this->assertArraySubset((new eImage())->getImageSize('fake_source.joke'), ['width' => 0, 'height' => 0]);
-
     }
 
     /**
@@ -75,8 +75,8 @@ class eImageTest extends PHPUnit_Framework_TestCase
     {
         foreach ($this->getSources() as $source => $sizes) {
             try {
-                $name   = substr($source, strrpos($source, '/') + 1);
-                $width  = $sizes[0];
+                $name = substr($source, strrpos($source, '/') + 1);
+                $width = $sizes[0];
                 $height = $sizes[1];
 
                 if (strpos($name, '.jpg')) {
@@ -84,13 +84,13 @@ class eImageTest extends PHPUnit_Framework_TestCase
                 }
 
                 $eImage = new eImage([
-                    'Source'     => $source,
-                    'Prefix'     => 'r_',
-                    'ReturnType' => 'array',
-                    'PadColor'   => '#FFFFFF'
+                    'source' => $source,
+                    'prefix' => 'r_',
+                    'returnType' => 'array',
+                    'padColor' => '#FFFFFF'
                 ]);
 
-                $n_width  = 300;
+                $n_width = 300;
                 $n_height = 273;
 
                 $rst = $eImage->resize(300, 273);
@@ -98,23 +98,26 @@ class eImageTest extends PHPUnit_Framework_TestCase
                 $this->getAspectRatio($n_width, $n_height, $width, $height, false);
 
                 $ex_rst = [
-                    'name'      => $name,
-                    'prefix'    => 'r_',
-                    'path'      => 'tests/assets/',
-                    'width'     => $n_width,
-                    'height'    => $n_height,
+                    'name' => $name,
+                    'prefix' => 'r_',
+                    'path' => 'tests/assets/',
+                    'width' => $n_width,
+                    'height' => $n_height,
                     'pad_color' => '#FFFFFF',
                     'full_path' => 'tests/assets/r_' . $name,
                 ];
 
                 $this->assertArraySubset($rst, $ex_rst);
 
-                $width  = $sizes[0];
+                $width = $sizes[0];
                 $height = $sizes[1];
 
-                $eImage->set(['Oversize' => true, 'ScaleUp' => true]);
+                $eImage->set([
+                    'oversize' => true,
+                    'scaleUp' => true
+                ]);
 
-                $n_width  = 200;
+                $n_width = 200;
                 $n_height = 250;
 
                 $rst = $eImage->resize(200, 250);
@@ -122,15 +125,13 @@ class eImageTest extends PHPUnit_Framework_TestCase
                 $this->getAspectRatio($n_width, $n_height, $width, $height, true);
 
                 $ex_rst['height'] = $n_height;
-                $ex_rst['width']  = $n_width;
+                $ex_rst['width'] = $n_width;
 
                 $this->assertArraySubset($rst, $ex_rst);
 
             } catch (eImageException $e) {
-
+                $this->assertFalse(isset($e));
             }
-
-            $this->assertFalse(isset($e));
         }
     }
 
@@ -143,9 +144,9 @@ class eImageTest extends PHPUnit_Framework_TestCase
 
             try {
                 $eImage = new eImage([
-                    'Source'     => $source,
-                    'Prefix'     => 'c_',
-                    'ReturnType' => 'whatever'
+                    'source' => $source,
+                    'prefix' => 'c_',
+                    'returnType' => 'whatever'
                 ]);
 
                 $eImage->crop(rand(200, $sizes[0]), rand(200, $sizes[1]), rand(-400, 400), rand(-400, 400));
@@ -165,26 +166,25 @@ class eImageTest extends PHPUnit_Framework_TestCase
     {
         try {
             $eImage = new eImage([
-                'Source'     => 'tests/assets/r_image.jpeg',
-                'ReturnType' => 'bool',
-                'PadColor'   => '#FFFFFF'
+                'source' => 'tests/assets/r_image.jpeg',
+                'returnType' => 'bool',
+                'padColor' => '#FFFFFF'
             ]);
 
             $this->assertTrue($eImage->resize(200, 300));
 
-            $eImage->set(['Duplicates' => 'u']);
+            $eImage->set(['duplicates' => 'u']);
 
             $this->assertTrue($eImage->crop(100, 150, -50, 50));
             $this->assertTrue(file_exists('tests/assets/r_image_0.jpeg'));
 
             $eImage->set([
-                'Source'     => 'tests/assets/c_image.jpeg',
-                'Duplicates' => 'e',
-                'ScaleUp'    => true
+                'source' => 'tests/assets/c_image.jpeg',
+                'duplicates' => 'e',
+                'scaleUp' => true
             ]);
 
             $eImage->resize(500, 500);
-
         } catch (eImageException $e) {
             $this->assertEquals(eImageException::IMAGE_EXIST, $e->getMessage());
         }

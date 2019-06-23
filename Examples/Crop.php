@@ -33,8 +33,8 @@ try {
      * Crop from source file
      */
     $Image->set([
-        'Source' => 'path_to_your_file.jpg',
-        'Prefix' => 'AfterCrop-'
+        'source' => 'path_to_your_file.jpg',
+        'prefix' => 'AfterCrop-'
     ]);
     $Image->crop(250, 250, -50, -75);
 

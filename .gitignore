@@ -1,15 +1,11 @@
-# IDE #
 .idea
+/vendor
 
 # Images #
-*.jpg
-*.jpeg
-*.png
-*.gif
-*.bmp
-*.wbmp;
+/tests/assets/*
+!/tests/assets/image.jpg
+!/tests/assets/image2.png
+!/tests/assets/image3.gif
+!/tests/assets/image4.jpg
 
-# Custom #
-/eTest
-notes
-/vendor
+/notes

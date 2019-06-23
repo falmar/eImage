@@ -34,10 +34,10 @@ try {
      * Resize from source file
      */
     $Image->set([
-        'Source' => 'my_source_image.jpg',
-        'Prefix' => 'AfterResize-',
-        'AspectRatio' => false,
-        'ScaleUp' => true
+        'source' => 'my_source_image.jpg',
+        'prefix' => 'AfterResize-',
+        'aspectRatio' => false,
+        'scaleUp' => true
     ]);
     $Image->resize(600, 205);
 

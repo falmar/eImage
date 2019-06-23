@@ -48,10 +48,10 @@ try {
    * return an array with the new image properties.
    */
   $Image = new eImage([
-      'NewName'    => 'my_new_name',
-      'UploadTo'   => 'Images/',
-      'Duplicates' => 'u',
-      'ReturnType' => 'array'
+      'newName'    => 'my_new_name',
+      'uploadTo'   => 'Images/',
+      'duplicates' => 'u',
+      'returnType' => 'array'
   ]);
   $Image->upload($File);
   
@@ -89,8 +89,8 @@ try {
     * Crop from source file
     */
    $Image->set([
-       'Source' => 'path_to_your_file.jpg',
-       'Prefix' => 'AfterCrop-'
+       'source' => 'path_to_your_file.jpg',
+       'prefix' => 'AfterCrop-'
    ]);
    $Image->crop(250, 250, -50, -75);
   
@@ -128,10 +128,10 @@ try {
     * Resize from source file
     */
    $Image->set([
-       'Source' => 'my_source_image.jpg',
-       'Prefix' => 'AfterResize-',
-       'AspectRatio' => false,
-       'ScaleUp' => true
+       'source' => 'my_source_image.jpg',
+       'prefix' => 'AfterResize-',
+       'aspectRatio' => false,
+       'scaleUp' => true
    ]);
    $Image->resize(600, 205);
   
@@ -146,17 +146,17 @@ try {
 ### Parameters and their default values
 
 ```php
-public $NewName;
+public $newName;
 
-public $UploadTo;
+public $uploadTo;
 
-public $ReturnType = 'full_path';
+public $returnType = 'full_path';
 
-public $SafeRename = true;
+public $safeRename = true;
 
-public $Duplicates = 'o';
+public $duplicates = 'o';
 
-private $EnableMIMEs = [
+private $enabledMIMEs = [
     '.jpe'  => 'image/jpeg',
     '.jpg'  => 'image/jpg',
     '.jpeg' => 'image/jpeg',
@@ -165,40 +165,40 @@ private $EnableMIMEs = [
     '.bmp'  => 'image/bmp',
     '.ico'  => 'image/x-icon',
 ];
-private $DisabledMIMEs = [];
+private $disabledMIMEs = [];
 
-public $CreateDir = false;
+public $createDir = false;
 
-public $Source;
+public $source;
 
-public $ImageQuality = 90;
+public $imageQuality = 90;
 
-public $NewExtension;
+public $newExtension;
 
-public $Prefix;
+public $prefix;
 
-public $NewPath;
+public $newPath;
 
-public $AspectRatio = true;
+public $aspectRatio = true;
 
-public $Oversize = false;
+public $oversize = false;
 
-public $ScaleUp = false;
+public $scaleUp = false;
 
-public $Position = 'cc';
+public $position = 'cc';
 
-public $FitPad = true;
+public $fitPad = true;
 
-public $PadColor = 'transparent';
+public $padColor = 'transparent';
 ```
 
-#### NewName
+#### newName
 Specify the new name for your image.
 
-#### UploadTo
+#### uploadTo
 Specify where the new image is going to be uploaded to.
 
-#### ReturnType
+#### returnType
 - 'full_path': string with the full path to the new image.
 - 'bool': true or false if the upload succeeded.
 - 'array':
@@ -206,59 +206,59 @@ Specify where the new image is going to be uploaded to.
     - from crop() method: Will return name, prefix, path, height, width and full_path.
     - from resize() method: Will return name, prefix, path, height, width, pad_color and full_path.
 
-#### SafeRename
+#### safeRename
 - true: will clean the image name and remove strange characters.
 - false: the new image will contain the same name as the uploaded image.
 
-#### Duplicates
+#### duplicates
 If a there is an existing file:
 - 'o': Overwrite the file.
 - 'u': Create an unique file.
 - 'e': Throw eImageException.
 
-#### EnabledMIMEs
+#### enabledMIMEs
 An array that contain the MIME Types the eImage Class will be allow to upload.
 ```php
 ['.jpg' => 'image/jpg']
 ```
-#### DisabledMIMEs
+#### disabledMIMEs
 If this property is set with values it will forbid to upload the MIME Types or Extensions specified.
 > NOTE: Any other MIME Type or Extension THAT IS NOT SET HERE will be allowed to upload.
 
-#### Source
+#### source
 Full path to a file automatically set after image upload for easy access resize and crop methods.
 
-#### CreateDir
+#### createDir
 If set to true create a directory if not exist (UploadTo | NewPath).
 
-#### ImageQuality
+#### imageQuality
 Integer [1-100]%.
 
-#### NewExtension
+#### newExtension
 Apply a new extension to the image (.jpg, .png, .gif).
 
-#### Prefix
+#### prefix
 Specify a new prefix for the image.
 
-#### NewPath
+#### newPath
 Specify path for the new image, it apply only for crop() and resize() methods.
 
-#### AspectRatio
+#### aspectRatio
 Set true or false if you want to maintain or not your image aspect ratio.
 
-#### Oversize
+#### oversize
 If true it will oversize the image when width > height or the otherwise.
 
-#### ScaleUp
+#### scaleUp
 Set true if want allow the image to scale up from a small size to a bigger one.
 
-#### PadColor
+#### padColor
 Hexadecimal color string for the image background if does not fit the canvas, default is 'transparent'.
 
-#### FitPad
+#### fitPad
 Set true if want to make use of the Position to fit the image in the canvas when the new size does not fit and AspectRatio is true.
 
-#### Position
+#### position
 Set the position of source in the canvas:
 - 'tr': top right
 - 'tl': top left

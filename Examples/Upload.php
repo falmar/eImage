@@ -36,10 +36,10 @@ try {
      * return an array with the new image properties.
      */
     $Image = new eImage([
-        'NewName'    => 'my_new_name.bmp',
-        'UploadTo'   => 'Images/',
-        'Duplicates' => 'u',
-        'ReturnType' => 'array'
+        'newName'    => 'my_new_name.bmp',
+        'uploadTo'   => 'Images/',
+        'duplicates' => 'u',
+        'returnType' => 'array'
     ]);
     $Image->upload($File);
 
