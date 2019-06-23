@@ -9,4 +9,4 @@ after_success:
 
 script:
   - composer install
-  - phpunit
+  - composer test
