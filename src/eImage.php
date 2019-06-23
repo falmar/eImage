@@ -19,53 +19,24 @@ namespace Falmar\eImage;
  */
 class eImage
 {
-    /** @var string */
-    public $newName;
+    protected $config = [
+        'newPath' => null,
+        'safeRename' => true,
+        'duplicates' => 'o',
+        'sourcePath' => null,
+        'prefix' => null,
+        'keepAspectRatio' => true,
+        'oversize' => false,
+        'scaleUp' => false,
 
-    /** @var string */
-    public $uploadTo;
+        'fitPad' => true,
+        'padColor' => 'transparent',
+        'position' => 'cc',
 
-    /** @var bool */
-    public $safeRename = true;
-
-    /** @var string */
-    public $duplicates = 'o';
-
-    /** @var bool */
-    public $createDir = true;
-
-    /** @var string */
-    public $source;
-
-    /** @var int */
-    public $imageQuality = 90;
-
-    /** @var string */
-    public $newExtension;
-
-    /** @var string */
-    public $prefix;
-
-    /** @var string */
-    public $newPath;
-
-    /** @var bool */
-    public $aspectRatio = true;
-
-    /** @var bool */
-    public $oversize = false;
-
-    /** @var bool */
-    public $scaleUp = false;
-
-    /** @var string */
-    public $padColor = 'transparent';
-
-    /** @var bool */
-    public $fitPad = true;
-
-    /** @var string */
-    public $position = 'cc';
+        'png' => [
+            'imageQuality' => 90,
+        ]
+    ];
 
     /**
      * eImage constructor.
@@ -79,13 +50,7 @@ class eImage
 
     public function setConfig($options = [])
     {
-        if (is_array($options)) {
-            foreach ($options as $k => $v) {
-                if (property_exists($this, $k)) {
-                    $this->$k = $v;
-                }
-            }
-        }
+        $this->config = array_merge($this->config, $options);
     }
 
     /**
@@ -103,34 +68,36 @@ class eImage
             throw new eImageException(eImageException::NO_WIDTH);
         } elseif (!is_integer($height)) {
             throw new eImageException(eImageException::NO_HEIGHT);
-        } elseif (!is_string($this->source)) {
+        } elseif (!is_string($this->config['sourcePath'])) {
             throw new eImageException(eImageException::NO_IMAGE);
         }
 
-        $source = $this->source;
+        $source = $this->config['sourcePath'];
 
         $this->imageCreateSource($source, $file, $ext);
 
         $DS = DIRECTORY_SEPARATOR;
-        $path = (is_integer(strpos($source, $DS))) ? substr($source, 0, strrpos($source, $DS) + 1) : null;
-        $path = trim(($this->newPath) ? $this->newPath : $path);
+        $path = trim($source);
 
-        if (!is_dir($path) && $path) {
-            if ($this->createDir) {
-                mkdir($path, 0777);
-            } else {
-                throw new eImageException(eImageException::UPLOAD_NO_DIR);
-            }
+        if ($this->config['newPath']) {
+            $path = trim($this->config['newPath']);
         }
 
-        $name = ($this->newName) ? $this->newName : str_replace($path, '', $source);
-        $name = (strrpos($name, $DS) !== strlen($name)) ? $name . $DS : $name;
-        $name = (strrpos($name, '.')) ? substr($name, 0, strrpos($name, '.')) . $ext : $name . $ext;
-        $name = ($this->safeRename) ? $this->cleanUp($name) : $name;
+        $dirPath = dirname($path) . $DS;
+        $fileName = basename($path);
+        $fileName = ($this->config['safeRename']) ? $this->cleanUp($fileName) : $fileName;
 
-        $this->handleDuplicates($path, $this->prefix, $name, $ext);
+        if (!file_exists($dirPath)) {
+            mkdir($path, 0777);
+        }
 
-        $source = $path . $this->prefix . $name;
+        if (strpos($fileName, $ext) === false) {
+            $fileName = substr($fileName, 0, strrpos($fileName, '.')) . $ext;
+        }
+
+        $this->handleDuplicates($dirPath, $this->config['prefix'], $fileName, $ext);
+
+        $filePath = $dirPath . $this->config['prefix'] . $fileName;
 
         $sWidth = imagesx($file);
         $sHeight = imagesy($file);
@@ -138,16 +105,16 @@ class eImage
         $cWidth = $width;
         $cHeight = $height;
 
-        if ($this->aspectRatio) {
-            $this->getAspectRatio($width, $height, $sWidth, $sHeight, $this->oversize);
+        if ($this->config['keepAspectRatio']) {
+            $this->getAspectRatio($width, $height, $sWidth, $sHeight, $this->config['oversize']);
         }
 
-        if (!$this->fitPad) {
+        if (!$this->config['fitPad']) {
             $cWidth = $width;
             $cHeight = $height;
         }
 
-        if (!$this->scaleUp) {
+        if (!$this->config['scaleUp']) {
             if ($sWidth <= $width && $sHeight <= $height) {
                 $width = $sWidth;
                 $height = $sHeight;
@@ -163,7 +130,7 @@ class eImage
             'sy' => 0
         ];
 
-        if ($this->fitPad) {
+        if ($this->config['fitPad']) {
             $top = 0;
             $left = 0;
             $right = $cWidth - $width;
@@ -171,34 +138,36 @@ class eImage
             $x = ($cWidth - $width) / 2;
             $y = ($cHeight - $height) / 2;
 
-            if (strpos($this->position, ',')) {
-                $dimensions = explode($this->position, ',');
+            $pos = $this->config['position'];
+
+            if (strpos($pos, ',')) {
+                $dimensions = explode($pos, ',');
                 $x = (int)@$dimensions[0];
                 $y = (int)@$dimensions[1];
                 $position['dx'] = $x;
                 $position['dy'] = $y;
-            } elseif ($this->position === 'tl') {
+            } elseif ($pos === 'tl') {
                 $position['dx'] = $left;
                 $position['dy'] = $top;
-            } elseif ($this->position === 'tr') {
+            } elseif ($pos === 'tr') {
                 $position['dx'] = $right;
                 $position['dy'] = $top;
-            } elseif ($this->position === 'tc') {
+            } elseif ($pos === 'tc') {
                 $position['dx'] = $x;
                 $position['dy'] = $top;
-            } elseif ($this->position === 'bl') {
+            } elseif ($pos === 'bl') {
                 $position['dx'] = $left;
                 $position['dy'] = $bottom;
-            } elseif ($this->position === 'br') {
+            } elseif ($pos === 'br') {
                 $position['dx'] = $right;
                 $position['dy'] = $bottom;
-            } elseif ($this->position === 'bc') {
+            } elseif ($pos === 'bc') {
                 $position['dx'] = $x;
                 $position['dy'] = $bottom;
-            } elseif ($this->position === 'cl') {
+            } elseif ($pos === 'cl') {
                 $position['dx'] = $left;
                 $position['dy'] = $y;
-            } elseif ($this->position === 'cr') {
+            } elseif ($pos === 'cr') {
                 $position['dx'] = $right;
                 $position['dy'] = $y;
             } else {
@@ -209,14 +178,16 @@ class eImage
 
         $canvas = imagecreatetruecolor($cWidth, $cHeight);
 
-        if ($this->padColor == 'transparent') {
-            imagealphablending($canvas, false);
-            $color = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
-            imagefill($canvas, 0, 0, $color);
-            imagesavealpha($canvas, true);
-        } else {
-            $color = $this->hex2rbg($this->padColor);
-            imagefill($canvas, 0, 0, imagecolorallocate($canvas, $color['r'], $color['b'], $color['g']));
+        if ($ext === '.png') {
+            if ($this->config['padColor'] == 'transparent') {
+                imagealphablending($canvas, false);
+                $color = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+                imagefill($canvas, 0, 0, $color);
+                imagesavealpha($canvas, true);
+            } else {
+                $color = $this->hex2rbg($this->config['padColor']);
+                imagefill($canvas, 0, 0, imagecolorallocate($canvas, $color['r'], $color['b'], $color['g']));
+            }
         }
 
         imagecopyresampled(
@@ -232,28 +203,18 @@ class eImage
             $sHeight
         );
 
-        $quality = $this->imageQuality;
-
-        if ($this->padColor == 'transparent') {
-            if ($ext != '.gif') {
-                $ext = '.png';
-            }
-        } else {
-            if ($ext == '.gif') {
-                $ext = '.jpg';
-            }
-        }
+        $quality = $this->config['png']['imageQuality'];
 
         if ($ext == '.png') {
             $quality = ($quality > 90) ? 9 : (int)(($quality) / 10);
         }
 
-        $this->imageCreate($ext, $canvas, $source, $quality);
+        $this->imageCreate($ext, $canvas, $filePath, $quality);
 
         imagedestroy($file);
         imagedestroy($canvas);
 
-        return (file_exists($source)) ? $source : false;
+        return (file_exists($filePath)) ? $filePath : false;
     }
 
     /**
@@ -279,51 +240,67 @@ class eImage
             throw new eImageException(eImageException::NO_Y);
         }
 
-        if (!$this->source || !file_exists($this->source)) {
+        if (!$this->config['sourcePath'] || !file_exists($this->config['sourcePath'])) {
             throw new eImageException(eImageException::NO_IMAGE);
         }
 
-        $source = $this->source;
+        $source = $this->config['sourcePath'];
 
         $this->imageCreateSource($source, $file, $ext);
 
         $DS = DIRECTORY_SEPARATOR;
-        $path = (is_integer(strpos($source, $DS))) ? substr($source, 0, strrpos($source, $DS) + 1) : null;
-        $path = trim(($this->newPath) ? $this->newPath : $path);
+        $path = trim($source);
 
-        if (!is_dir($path) && $path) {
-            if ($this->createDir) {
-                mkdir($path, 0777);
+        if ($this->config['newPath']) {
+            $path = trim($this->config['newPath']);
+        }
+
+        $dirPath = dirname($path) . $DS;
+        $fileName = basename($path);
+        $fileName = ($this->config['safeRename']) ? $this->cleanUp($fileName) : $fileName;
+
+        if (!file_exists($dirPath)) {
+            mkdir($path, 0777);
+        }
+
+        if (strpos($fileName, $ext) === false) {
+            $fileName = substr($fileName, 0, strrpos($fileName, '.')) . $ext;
+        }
+
+        $this->handleDuplicates($dirPath, $this->config['prefix'], $fileName, $ext);
+
+        $filePath = $dirPath . $this->config['prefix'] . $fileName;
+
+        $canvas = imagecreatetruecolor($width, $height);
+
+        if ($ext === '.png') {
+            if ($this->config['padColor'] == 'transparent') {
+                imagealphablending($canvas, false);
+                $color = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+                imagefill($canvas, 0, 0, $color);
+                imagesavealpha($canvas, true);
             } else {
-                throw new eImageException(eImageException::UPLOAD_NO_DIR);
+                $color = $this->hex2rbg($this->config['padColor']);
+                imagefill($canvas, 0, 0, imagecolorallocate($canvas, $color['r'], $color['b'], $color['g']));
             }
         }
 
-        $name = ($this->newName) ? $this->newName : str_replace($path, '', $source);
-        $name = (strrpos($name, $DS) !== strlen($name)) ? $name . $DS : $name;
-        $name = (strrpos($name, '.')) ? substr($name, 0, strrpos($name, '.')) . $ext : $name . $ext;
-        $name = ($this->safeRename) ? $this->cleanUp($name) : $name;
-
-        $this->handleDuplicates($path, $this->prefix, $name, $ext);
-
-        $source = $path . $this->prefix . $name;
-        $canvas = imagecreatetruecolor($width, $height);
         $sWidth = imagesx($file);
         $sHeight = imagesy($file);
         imagecopyresampled($canvas, $file, $x, $y, 0, 0, $sWidth, $sHeight, $sWidth, $sHeight);
 
-        $quality = $this->imageQuality;
+        $quality = $this->config['png']['imageQuality'];
 
         if ($ext == '.png') {
             $quality = ($quality > 90) ? 9 : ((int)$quality) / 10;
         }
 
-        $this->imageCreate($ext, $canvas, $source, $quality);
+        $this->imageCreate($ext, $canvas, $filePath, $quality);
 
         imagedestroy($file);
         imagedestroy($canvas);
 
-        return (file_exists($source)) ? $source : false;
+        return (file_exists($filePath)) ? $filePath : false;
     }
 
     /** Helper functions */
@@ -338,6 +315,7 @@ class eImage
     protected function cleanUp($string)
     {
         $string = preg_replace('/\s/i', '', $string);
+
         if (strrpos($string, '.')) {
             $string = substr($string, 0, strrpos($string, '.')) . strtolower(strrchr($string, '.'));
         }
@@ -362,9 +340,9 @@ class eImage
             return;
         }
 
-        if ($this->duplicates === 'e') {
+        if ($this->config['duplicates'] === 'e') {
             throw new eImageException(eImageException::IMAGE_EXIST);
-        } elseif ($this->duplicates !== 'o') {
+        } elseif ($this->config['duplicates'] !== 'o') {
             if ($pos = strrpos($name, '.')) {
                 $im = substr($name, 0, $pos);
             } else {
@@ -391,7 +369,7 @@ class eImage
      */
     protected function imageCreate($ext, $canvas, $name, $quality = null)
     {
-        $quality = (!is_null($quality)) ? $quality : $this->imageQuality;
+        $quality = (!is_null($quality)) ? $quality : $this->config['png']['imageQuality'];
 
         if ($ext === '.gif') {
             imagegif($canvas, $name);
@@ -419,28 +397,28 @@ class eImage
         if ($mime === 'image/gif') {
             if (imagetypes() && IMG_GIF) {
                 $file = imagecreatefromgif($source);
-                $ext = ($this->newExtension) ? $this->newExtension : '.gif';
+                $ext = '.gif';
             } else {
                 throw new eImageException(eImageException::BAD_EXT . ' - GIF not supported PHP');
             }
         } elseif ($mime === 'image/jpeg') {
             if (imagetypes() && IMG_JPEG) {
                 $file = imagecreatefromjpeg($source);
-                $ext = ($this->newExtension) ? $this->newExtension : '.jpeg';
+                $ext = '.jpeg';
             } else {
                 throw new eImageException(eImageException::BAD_EXT . ' - JPEG not supported PHP');
             }
         } elseif ($mime === 'image/png') {
             if (imagetypes() && IMG_PNG) {
                 $file = imagecreatefrompng($source);
-                $ext = ($this->newExtension) ? $this->newExtension : '.png';
+                $ext = '.png';
             } else {
                 throw new eImageException(eImageException::BAD_EXT . ' - PNG not supported PHP');
             }
         } elseif ($mime === 'image/wbmp') {
             if (imagetypes() && IMG_WBMP) {
                 $file = imagecreatefromwbmp($source);
-                $ext = ($this->newExtension) ? $this->newExtension : '.wbmp';
+                $ext = '.wbmp';
             } else {
                 throw new eImageException(eImageException::BAD_EXT . ' - WBMP not supported PHP');
             }
