@@ -25,31 +25,14 @@ class eImage
     /** @var string */
     public $uploadTo;
 
-    /** @var string */
-    public $returnType = 'full_path';
-
     /** @var bool */
     public $safeRename = true;
 
     /** @var string */
     public $duplicates = 'o';
 
-    /** @var array */
-    private $enabledMIMEs = [
-        '.jpe' => 'image/jpeg',
-        '.jpg' => 'image/jpg',
-        '.jpeg' => 'image/jpeg',
-        '.gif' => 'image/gif',
-        '.png' => 'image/png',
-        '.bmp' => 'image/bmp',
-        '.ico' => 'image/x-icon',
-    ];
-
-    /** @var array */
-    private $disabledMIMEs = [];
-
     /** @var bool */
-    public $createDir = false;
+    public $createDir = true;
 
     /** @var string */
     public $source;
@@ -91,10 +74,10 @@ class eImage
      */
     public function __construct($options = [])
     {
-        $this->set($options);
+        $this->setConfig($options);
     }
 
-    public function set($options = [])
+    public function setConfig($options = [])
     {
         if (is_array($options)) {
             foreach ($options as $k => $v) {
@@ -102,132 +85,6 @@ class eImage
                     $this->$k = $v;
                 }
             }
-        }
-    }
-
-    /**
-     * @codeCoverageIgnore
-     *
-     * @param $string
-     *
-     * @return mixed
-     */
-    public function cleanUp($string)
-    {
-        $string = preg_replace('/\s/i', '', $string);
-        if (strrpos($string, '.')) {
-            $string = substr($string, 0, strrpos($string, '.')) . strtolower(strrchr($string, '.'));
-        }
-
-        return preg_replace('/[^A-Za-z0-9_\-\.]/i', '', $string);
-    }
-
-    /**
-     * @param array $arUpload
-     *
-     * @return array|bool|string
-     * @throws eImageException
-     */
-    public function upload($arUpload)
-    {
-        if (!is_array($arUpload) || !isset($arUpload['name'])) {
-            throw new eImageException(eImageException::UPLOAD_NO_ARRAY);
-        }
-
-        if (isset($arUpload['error'])) {
-            if ($arUpload['error'] === 1) {
-                throw new eImageException(eImageException::UPLOAD_INI_MAX);
-            } elseif ($arUpload['error'] === 2) {
-                throw new eImageException(eImageException::UPLOAD_FORM_MAX);
-            } elseif ($arUpload['error'] === 3) {
-                throw new eImageException(eImageException::UPLOAD_PARTIAL);
-            } elseif ($arUpload['error'] === 4) {
-                throw new eImageException(eImageException::UPLOAD_NO_FILE);
-            } elseif ($arUpload['error'] === 6) {
-                throw new eImageException(eImageException::UPLOAD_NO_TMP_DIR);
-            } elseif ($arUpload['error'] === 7) {
-                throw new eImageException(eImageException::UPLOAD_WRITE_AC);
-            } elseif ($arUpload['error'] === 8) {
-                throw new eImageException(eImageException::UPLOAD_EXT);
-            }
-        }
-
-        if (!$arUpload['size']) {
-            throw new eImageException(eImageException::UPLOAD_SIZE);
-        }
-
-        if ($this->uploadTo) {
-            if (!is_dir($this->uploadTo)) {
-                if ($this->createDir) {
-                    mkdir($this->uploadTo, 0777);
-                } else {
-                    throw new eImageException(eImageException::UPLOAD_NO_DIR);
-                }
-            }
-            if (strrpos($this->uploadTo, DIRECTORY_SEPARATOR) !== strlen($this->uploadTo) - 1) {
-                $this->uploadTo .= DIRECTORY_SEPARATOR;
-            }
-        }
-
-        $imageName = ($this->newName) ? $this->newName : $arUpload['name'];
-        $imageName = ($this->safeRename) ? $this->cleanUp($imageName) : $imageName;
-        $imageType = $arUpload['type'];
-        $imageTempName = $arUpload['tmp_name'];
-        $imageSize = $arUpload['size'];
-        $ext = substr($arUpload['name'], strrpos($arUpload['name'], '.'));
-        $enabled = false;
-
-        if (is_integer(strpos($ext, 'jpg'))) {
-            $ext = '.jpeg';
-        }
-
-        if ($newExt = strrchr($imageName, '.')) {
-            if ($newExt != $ext) {
-                $imageName = str_replace($newExt, '', $imageName) . $ext;
-            }
-        } else {
-            $imageName = $imageName . $ext;
-        }
-
-        if ($this->disabledMIMEs && (!array_key_exists($ext, $this->disabledMIMEs) || !in_array($imageType,
-                    $this->disabledMIMEs))
-        ) {
-            $enabled = true;
-        }
-
-        if ((!array_key_exists($ext, $this->enabledMIMEs) || !in_array($imageType, $this->enabledMIMEs)) && !$enabled) {
-            throw new eImageException(eImageException::UPLOAD_EXT);
-        }
-
-        $prefix = $this->prefix;
-        $this->handleDuplicates($this->uploadTo, $prefix, $imageName, $ext);
-        $target = $this->uploadTo . $prefix . $imageName;
-
-        if (file_exists($target) && !is_writable($target)) {
-            @chmod($target, 0777);
-        }
-
-        if (move_uploaded_file($imageTempName, $target)) {
-            /** @var string $source easy access for resize and crop functions */
-            $this->source = $target;
-
-            $returnType = strtolower($this->returnType);
-            if ($returnType === 'array') {
-                return [
-                    'name' => basename($imageName),
-                    'path' => $this->uploadTo,
-                    'size' => $imageSize,
-                    'tmp_name' => $imageTempName,
-                    'full_path' => $this->source
-                ];
-            } elseif ($returnType === 'full_path') {
-                return (file_exists($this->source)) ? $this->source : false;
-            } else {
-                return (file_exists($this->source)) ? true : false;
-            }
-
-        } else {
-            throw new eImageException(eImageException::UPLOAD_FAILED);
         }
     }
 
@@ -270,11 +127,10 @@ class eImage
         $name = (strrpos($name, $DS) !== strlen($name)) ? $name . $DS : $name;
         $name = (strrpos($name, '.')) ? substr($name, 0, strrpos($name, '.')) . $ext : $name . $ext;
         $name = ($this->safeRename) ? $this->cleanUp($name) : $name;
-        $prefix = $this->prefix;
 
-        $this->handleDuplicates($path, $prefix, $name, $ext);
+        $this->handleDuplicates($path, $this->prefix, $name, $ext);
 
-        $source = $path . $prefix . $name;
+        $source = $path . $this->prefix . $name;
 
         $sWidth = imagesx($file);
         $sHeight = imagesy($file);
@@ -283,29 +139,7 @@ class eImage
         $cHeight = $height;
 
         if ($this->aspectRatio) {
-            if ($sWidth > $sHeight) {
-                if ($this->oversize) {
-                    $nHeight = round(($sHeight / $sWidth) * $width);
-                    if ($nHeight < $height) {
-                        $width = round(($height * $sWidth) / $sHeight);
-                    } else {
-                        $height = $nHeight;
-                    }
-                } else {
-                    $height = round(($sHeight / $sWidth) * $width);
-                }
-            } elseif ($sHeight > $sWidth) {
-                if ($this->oversize) {
-                    $nWidth = round(($height * $sWidth) / $sHeight);
-                    if ($nWidth < $width) {
-                        $height = round(($sHeight / $sWidth) * $width);
-                    } else {
-                        $width = $nWidth;
-                    }
-                } else {
-                    $width = round(($height * $sWidth) / $sHeight);
-                }
-            }
+            $this->getAspectRatio($width, $height, $sWidth, $sHeight, $this->oversize);
         }
 
         if (!$this->fitPad) {
@@ -419,22 +253,7 @@ class eImage
         imagedestroy($file);
         imagedestroy($canvas);
 
-        $returnType = strtolower($this->returnType);
-        if ($returnType === 'array') {
-            return [
-                'name' => $name,
-                'prefix' => $prefix,
-                'path' => $path,
-                'width' => $width,
-                'height' => $height,
-                'pad_color' => $this->padColor,
-                'full_path' => $source
-            ];
-        } elseif ($returnType === 'full_path') {
-            return (file_exists($source)) ? $source : false;
-        } else {
-            return (file_exists($source)) ? true : false;
-        }
+        return (file_exists($source)) ? $source : false;
     }
 
     /**
@@ -484,11 +303,10 @@ class eImage
         $name = (strrpos($name, $DS) !== strlen($name)) ? $name . $DS : $name;
         $name = (strrpos($name, '.')) ? substr($name, 0, strrpos($name, '.')) . $ext : $name . $ext;
         $name = ($this->safeRename) ? $this->cleanUp($name) : $name;
-        $prefix = $this->prefix;
 
-        $this->handleDuplicates($path, $prefix, $name, $ext);
+        $this->handleDuplicates($path, $this->prefix, $name, $ext);
 
-        $source = $path . $prefix . $name;
+        $source = $path . $this->prefix . $name;
         $canvas = imagecreatetruecolor($width, $height);
         $sWidth = imagesx($file);
         $sHeight = imagesy($file);
@@ -505,24 +323,27 @@ class eImage
         imagedestroy($file);
         imagedestroy($canvas);
 
-        $returnType = strtolower($this->returnType);
-        if ($returnType === 'array') {
-            return [
-                'name' => $name,
-                'prefix' => $prefix,
-                'path' => $path,
-                'full_path' => $source,
-                'width' => $width,
-                'height' => $height
-            ];
-        } elseif ($returnType === 'full_path') {
-            return (file_exists($source)) ? $source : false;
-        } else {
-            return (file_exists($source)) ? true : false;
-        }
+        return (file_exists($source)) ? $source : false;
     }
 
     /** Helper functions */
+
+    /**
+     * @codeCoverageIgnore
+     *
+     * @param $string
+     *
+     * @return mixed
+     */
+    protected function cleanUp($string)
+    {
+        $string = preg_replace('/\s/i', '', $string);
+        if (strrpos($string, '.')) {
+            $string = substr($string, 0, strrpos($string, '.')) . strtolower(strrchr($string, '.'));
+        }
+
+        return preg_replace('/[^A-Za-z0-9_\-\.]/i', '', $string);
+    }
 
     /**
      * @codeCoverageIgnore
@@ -532,32 +353,32 @@ class eImage
      * @param string $name
      * @param string $ext
      *
-     * @return bool
+     * @return void
      * @throws eImageException
      */
-    private function handleDuplicates($path, $prefix, &$name, &$ext)
+    protected function handleDuplicates($path, $prefix, &$name, &$ext)
     {
-        if (file_exists($path . $prefix . $name)) {
-
-            if ($this->duplicates === 'o') {
-            } elseif ($this->duplicates === 'e') {
-                throw new eImageException(eImageException::IMAGE_EXIST);
-            } else {
-                if (strrpos(($name), '.')) {
-                    $im = substr(($name), 0, strrpos(($name), '.'));
-                } else {
-                    $im = ($name);
-                }
-
-                $i = 0;
-                while (file_exists($path . $prefix . $im . '_' . $i . $ext)) {
-                    $i++;
-                }
-                $name = $prefix . $im . '_' . $i . $ext;
-            }
+        if (!file_exists($path . $prefix . $name)) {
+            return;
         }
 
-        return true;
+        if ($this->duplicates === 'e') {
+            throw new eImageException(eImageException::IMAGE_EXIST);
+        } elseif ($this->duplicates !== 'o') {
+            if ($pos = strrpos($name, '.')) {
+                $im = substr($name, 0, $pos);
+            } else {
+                $im = ($name);
+            }
+
+            $i = 0;
+
+            while (file_exists($path . $prefix . $im . '_' . $i . $ext)) {
+                $i++;
+            }
+
+            $name = $prefix . $im . '_' . $i . $ext;
+        }
     }
 
     /**
@@ -568,7 +389,7 @@ class eImage
      * @param string $name
      * @param null|int $quality
      */
-    private function imageCreate($ext, $canvas, $name, $quality = null)
+    protected function imageCreate($ext, $canvas, $name, $quality = null)
     {
         $quality = (!is_null($quality)) ? $quality : $this->imageQuality;
 
@@ -589,10 +410,9 @@ class eImage
      * @param string $source
      * @param resource $file
      * @param string $ext
-
      * @throws eImageException
      */
-    private function imageCreateSource($source, &$file, &$ext)
+    protected function imageCreateSource($source, &$file, &$ext)
     {
         $mime = getimagesize($source)['mime'];
 
@@ -636,7 +456,7 @@ class eImage
      *
      * @return array
      */
-    private function hex2rbg($hex)
+    protected function hex2rbg($hex)
     {
         $color = str_replace('#', '', $hex);
 
@@ -647,12 +467,39 @@ class eImage
         ];
     }
 
+    static public function getAspectRatio(&$width, &$height, $s_width, $s_height, $oversize)
+    {
+        if ($s_width > $s_height) {
+            if ($oversize) {
+                $nHeight = round(($s_height / $s_width) * $width);
+                if ($nHeight < $height) {
+                    $width = round(($height * $s_width) / $s_height);
+                } else {
+                    $height = $nHeight;
+                }
+            } else {
+                $height = round(($s_height / $s_width) * $width);
+            }
+        } elseif ($s_height > $s_width) {
+            if ($oversize) {
+                $nWidth = round(($height * $s_width) / $s_height);
+                if ($nWidth < $width) {
+                    $height = round(($s_height / $s_width) * $width);
+                } else {
+                    $width = $nWidth;
+                }
+            } else {
+                $width = round(($height * $s_width) / $s_height);
+            }
+        }
+    }
+
     /**
      * @param string $img
      *
      * @return array
      */
-    public function getImageSize($img)
+    static public function getImageSize($img)
     {
         if (file_exists($img)) {
             list($width, $height) = getimagesize($img);

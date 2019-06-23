@@ -13,31 +13,18 @@
 use Falmar\eImage\eImage;
 use Falmar\eImage\eImageException;
 
-/** Upload your image **/
-$File = (isset($_FILES['img'])) ? $_FILES['img'] : null;
-
 require_once('../vendor/autoload.php');
 
 try {
-
     /**
-     * Crop from upload
+     * Crop image
      */
-    $Image = new eImage();
-    $Image->upload($File);
-    $Image->crop(250, 250, -50, -75);
-
-    /** -------------------------------------------------- */
-
-    /**
-     * Crop from source file
-     */
-    $Image->set([
+    $Image = new eImage([
         'source' => 'path_to_your_file.jpg',
         'prefix' => 'AfterCrop-'
     ]);
-    $Image->crop(250, 250, -50, -75);
 
+    $Image->crop(250, 250, -50, -75);
 } catch (eImageException $e) {
     echo $e->getMessage();
     /** do something else **/

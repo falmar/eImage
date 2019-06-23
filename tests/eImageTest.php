@@ -25,47 +25,22 @@ class eImageTest extends TestCase
         ];
     }
 
-    private function getAspectRatio(&$Width, &$Height, $s_Width, $s_Height, $Oversize)
-    {
-        if ($s_Width > $s_Height) {
-            if ($Oversize) {
-                $nHeight = round(($s_Height / $s_Width) * $Width);
-                if ($nHeight < $Height) {
-                    $Width = round(($Height * $s_Width) / $s_Height);
-                } else {
-                    $Height = $nHeight;
-                }
-            } else {
-                $Height = round(($s_Height / $s_Width) * $Width);
-            }
-        } elseif ($s_Height > $s_Width) {
-            if ($Oversize) {
-                $nWidth = round(($Height * $s_Width) / $s_Height);
-                if ($nWidth < $Width) {
-                    $Height = round(($s_Height / $s_Width) * $Width);
-                } else {
-                    $Width = $nWidth;
-                }
-            } else {
-                $Width = round(($Height * $s_Width) / $s_Height);
-            }
-        }
-    }
-
-
     /**
      * @covers Falmar\eImage\eImage::getImageSize
      */
     public function testGetImageSize()
     {
-        foreach ($this->getSources() as $source => $size) {
-            $this->assertArraySubset((new eImage())->getImageSize($source), [
-                'width' => $size[0],
-                'height' => $size[1]
-            ]);
+        foreach ($this->getSources() as $source => [$width, $height]) {
+            $size = eImage::getImageSize($source);
+
+            $this->assertEquals($width, $size['width']);
+            $this->assertEquals($height, $size['height']);
         }
 
-        $this->assertArraySubset((new eImage())->getImageSize('fake_source.joke'), ['width' => 0, 'height' => 0]);
+        $size = eImage::getImageSize('fake_source.joke');
+
+        $this->assertEquals(0, $size['width']);
+        $this->assertEquals(0, $size['height']);
     }
 
     /**
@@ -75,62 +50,29 @@ class eImageTest extends TestCase
     {
         foreach ($this->getSources() as $source => $sizes) {
             try {
-                $name = substr($source, strrpos($source, '/') + 1);
-                $width = $sizes[0];
-                $height = $sizes[1];
+                $dir = dirname($source);
+                $name = basename($source);
 
-                if (strpos($name, '.jpg')) {
-                    $name = str_replace('.jpg', '.jpeg', $name);
-                }
+                $expectedPath = $dir . '/' . 'r_' . (str_replace('.jpg', '.jpeg', $name));
 
                 $eImage = new eImage([
                     'source' => $source,
                     'prefix' => 'r_',
-                    'returnType' => 'array',
                     'padColor' => '#FFFFFF'
                 ]);
 
-                $n_width = 300;
-                $n_height = 273;
+                $path = $eImage->resize(300, 273);
 
-                $rst = $eImage->resize(300, 273);
+                $this->assertIsString($path);
 
-                $this->getAspectRatio($n_width, $n_height, $width, $height, false);
+                $this->assertStringContainsString($expectedPath, $path);
 
-                $ex_rst = [
-                    'name' => $name,
-                    'prefix' => 'r_',
-                    'path' => 'tests/assets/',
-                    'width' => $n_width,
-                    'height' => $n_height,
-                    'pad_color' => '#FFFFFF',
-                    'full_path' => 'tests/assets/r_' . $name,
-                ];
+                $size = $eImage->getImageSize($path);
 
-                $this->assertArraySubset($rst, $ex_rst);
-
-                $width = $sizes[0];
-                $height = $sizes[1];
-
-                $eImage->set([
-                    'oversize' => true,
-                    'scaleUp' => true
-                ]);
-
-                $n_width = 200;
-                $n_height = 250;
-
-                $rst = $eImage->resize(200, 250);
-
-                $this->getAspectRatio($n_width, $n_height, $width, $height, true);
-
-                $ex_rst['height'] = $n_height;
-                $ex_rst['width'] = $n_width;
-
-                $this->assertArraySubset($rst, $ex_rst);
-
+                $this->assertEquals(300, $size['width']);
+                $this->assertEquals(273, $size['height']);
             } catch (eImageException $e) {
-                $this->assertFalse(isset($e));
+                $this->fail($e->getMessage());
             }
         }
     }
@@ -141,12 +83,10 @@ class eImageTest extends TestCase
     public function testCrop()
     {
         foreach ($this->getSources() as $source => $sizes) {
-
             try {
                 $eImage = new eImage([
                     'source' => $source,
                     'prefix' => 'c_',
-                    'returnType' => 'whatever'
                 ]);
 
                 $eImage->crop(rand(200, $sizes[0]), rand(200, $sizes[1]), rand(-400, 400), rand(-400, 400));
@@ -167,18 +107,22 @@ class eImageTest extends TestCase
         try {
             $eImage = new eImage([
                 'source' => 'tests/assets/r_image.jpeg',
-                'returnType' => 'bool',
                 'padColor' => '#FFFFFF'
             ]);
 
-            $this->assertTrue($eImage->resize(200, 300));
+            $path = $eImage->resize(200, 300);
 
-            $eImage->set(['duplicates' => 'u']);
+            $this->assertIsString($path);
+            $this->assertStringContainsString($path, 'tests/assets/r_image.jpeg');
 
-            $this->assertTrue($eImage->crop(100, 150, -50, 50));
+            $eImage->setConfig(['duplicates' => 'u']);
+
+            $path = $eImage->crop(100, 150, -50, 50);
+
+            $this->assertIsString($path);
             $this->assertTrue(file_exists('tests/assets/r_image_0.jpeg'));
 
-            $eImage->set([
+            $eImage->setConfig([
                 'source' => 'tests/assets/c_image.jpeg',
                 'duplicates' => 'e',
                 'scaleUp' => true

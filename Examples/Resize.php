@@ -13,34 +13,20 @@
 use Falmar\eImage\eImage;
 use Falmar\eImage\eImageException;
 
-/** Upload your image **/
-$File = (isset($_FILES['img'])) ? $_FILES['img'] : null;
-
 require_once('../vendor/autoload.php');
 
 try {
-
     /**
-     * Resize from upload
+     * Resize image
      */
-    $Image = new eImage();
-    $Image->upload($File);
-    $Image->resize(600, 450);
-
-    /** -------------------------------------------------- */
-
-
-    /**
-     * Resize from source file
-     */
-    $Image->set([
+    $Image = new eImage([
         'source' => 'my_source_image.jpg',
         'prefix' => 'AfterResize-',
         'aspectRatio' => false,
         'scaleUp' => true
     ]);
-    $Image->resize(600, 205);
 
+    $Image->resize(600, 205);
 } catch (eImageException $e) {
     echo $e->getMessage();
     /** do something else **/

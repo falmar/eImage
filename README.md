@@ -50,8 +50,7 @@ try {
   $Image = new eImage([
       'newName'    => 'my_new_name',
       'uploadTo'   => 'Images/',
-      'duplicates' => 'u',
-      'returnType' => 'array'
+      'duplicates' => 'u',      
   ]);
   $Image->upload($File);
   
@@ -150,22 +149,9 @@ public $newName;
 
 public $uploadTo;
 
-public $returnType = 'full_path';
-
 public $safeRename = true;
 
 public $duplicates = 'o';
-
-private $enabledMIMEs = [
-    '.jpe'  => 'image/jpeg',
-    '.jpg'  => 'image/jpg',
-    '.jpeg' => 'image/jpeg',
-    '.gif'  => 'image/gif',
-    '.png'  => 'image/png',
-    '.bmp'  => 'image/bmp',
-    '.ico'  => 'image/x-icon',
-];
-private $disabledMIMEs = [];
 
 public $createDir = false;
 
@@ -198,14 +184,6 @@ Specify the new name for your image.
 #### uploadTo
 Specify where the new image is going to be uploaded to.
 
-#### returnType
-- 'full_path': string with the full path to the new image.
-- 'bool': true or false if the upload succeeded.
-- 'array':
-    - from upload() method: Pretty close to the ```$_FILE``` array it will return name, path, size, tmp_name and full_path.
-    - from crop() method: Will return name, prefix, path, height, width and full_path.
-    - from resize() method: Will return name, prefix, path, height, width, pad_color and full_path.
-
 #### safeRename
 - true: will clean the image name and remove strange characters.
 - false: the new image will contain the same name as the uploaded image.
@@ -215,15 +193,6 @@ If a there is an existing file:
 - 'o': Overwrite the file.
 - 'u': Create an unique file.
 - 'e': Throw eImageException.
-
-#### enabledMIMEs
-An array that contain the MIME Types the eImage Class will be allow to upload.
-```php
-['.jpg' => 'image/jpg']
-```
-#### disabledMIMEs
-If this property is set with values it will forbid to upload the MIME Types or Extensions specified.
-> NOTE: Any other MIME Type or Extension THAT IS NOT SET HERE will be allowed to upload.
 
 #### source
 Full path to a file automatically set after image upload for easy access resize and crop methods.
